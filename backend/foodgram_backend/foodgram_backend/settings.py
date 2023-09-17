@@ -106,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'UTC'
 
@@ -135,7 +135,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 6,
 }
 
 SIMPLE_JWT = {
@@ -181,6 +183,19 @@ SIMPLE_JWT = {
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
     'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': True,
-    'SERIALIZERS': {},
+    'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': False,
+    'SERIALIZERS': {
+        'user': 'api.serializers.CustomUserSerializer',
+        'user_create': 'api.serializers.CustomUserCreateSerializer',
+    },
 }
+
+# DEFAULT_FROM_EMAIL = 'admin@mail.com'
+# SERVER_EMAIL = 'admin@mail.com'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_HOST_USER = 'email'
+# EMAIL_HOST_PASSWORD = 'password'
+# EMAIL_PORT = 587

@@ -1,22 +1,26 @@
 from django.contrib.auth import get_user_model
-from rest_framework import serializers
-from djoser.serializers import UserCreateSerializer
+from djoser.serializers import UserCreateSerializer, UserSerializer
 
 
 User = get_user_model()
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
-    email = serializers.EmailField()
 
     class Meta:
         model = User
-        fields = ('email', 'password')
-    
-    def create(self, validated_data):
-        user = User(
-            email=validated_data['email'],
-        )
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+        fields = ('first_name', 'last_name', 'username', 'email', 'password')
+        extra_kwargs = {
+            'first_name': {'required': True},
+            'last_name': {'required': True},
+            'username': {'required': True},
+            'email': {'required': True},
+            'password': {'required': True}
+        }
+
+
+class CustomUserSerializer(UserSerializer):
+
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username', 'first_name', 'last_name')
