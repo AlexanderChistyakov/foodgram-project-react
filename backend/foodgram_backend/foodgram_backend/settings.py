@@ -186,16 +186,15 @@ DJOSER = {
     'ACTIVATION_URL': '#/activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': False,
     'SERIALIZERS': {
+        'current_user': 'api.serializers.CustomUserSerializer',
         'user': 'api.serializers.CustomUserSerializer',
         'user_create': 'api.serializers.CustomUserCreateSerializer',
     },
+    'HIDE_USERS': False,
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': False,
+    'PERMISSIONS': {
+        'current_user': ['rest_framework.permissions.IsAuthenticated'],
+        'user': ['rest_framework.permissions.IsAuthenticated'],
+        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+    }
 }
-
-# DEFAULT_FROM_EMAIL = 'admin@mail.com'
-# SERVER_EMAIL = 'admin@mail.com'
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_USE_TLS = True
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_HOST_USER = 'email'
-# EMAIL_HOST_PASSWORD = 'password'
-# EMAIL_PORT = 587
