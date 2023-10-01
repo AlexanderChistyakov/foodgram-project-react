@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -198,3 +199,5 @@ DJOSER = {
         'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
     }
 }
+
+AUTH_USER_MODEL = 'api.User'
