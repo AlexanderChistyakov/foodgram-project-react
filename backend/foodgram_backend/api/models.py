@@ -72,19 +72,9 @@ class Tag(models.Model):
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
+    def __str__(self):
+        return self.name
 
-# class Measure(models.Model):
-
-#     name = models.CharField(
-#         max_length=10,
-#         unique=True,
-#         blank=False,
-#         verbose_name='Название меры',
-#     )
-#     quantity = models.IntegerField(
-#         blank=False,
-#         verbose_name='Количество'
-#     )
 
 
 class Ingredient(models.Model):
@@ -99,6 +89,12 @@ class Ingredient(models.Model):
         blank=False,
         verbose_name='Название меры',
     )
+
+    class Meta:
+        verbose_name = 'Продукт'
+        verbose_name_plural = 'Продукты'
+    def __str__(self):
+        return self.name
 
 
 class Recipe(models.Model):
@@ -143,3 +139,26 @@ class Recipe(models.Model):
     )
 
 
+    class Meta:
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
+    
+    def __str__(self):
+        return self.name
+
+
+class RecipeIngredients(models.Model):
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='recipe_ingredients',
+    )
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+        related_name='recipe_ingredients',
+    )
+    amount = models.PositiveIntegerField(
+        blank=False,
+        verbose_name='Количество',
+    )

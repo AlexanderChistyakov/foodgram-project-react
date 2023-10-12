@@ -1,11 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from rest_framework.response import Response
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, permissions
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
+from djoser import views
 
 from .models import User, Follow, Tag, Ingredient, Recipe
-from .serializers import TagSerializer, IngredientSerializer, RecipeSerializer
+from .permissions import IsAuthorOrReadOnly
+from .serializers import TagSerializer, IngredientDetailSerializer, IngredientAmountSerializer, RecipeSerializer, RecipeListSerializer, CustomUserSerializer
 
 
 @api_view(['POST', 'DELETE'])
@@ -29,13 +31,25 @@ def subscribe(request, id):
 class TagViewset(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly
+    ]
 
 
-class IngredientViewSet(viewsets.ModelViewSet):
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
-    serializer_class = IngredientSerializer
+    serializer_class = IngredientDetailSerializer
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly
+    ]
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
+    ]
+    def get_serializer_class(self):
+        if self.action in ('list', 'retrive'):
+            return RecipeListSerializer
+        return RecipeSerializer
