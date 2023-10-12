@@ -162,3 +162,7 @@ class RecipeIngredients(models.Model):
         blank=False,
         verbose_name='Количество',
     )
+
+    class Meta:
+        verbose_name = 'Мера(таблица m2m рецепт-ингредиент)'
+        verbose_name_plural = 'Мера(таблица m2m рецепт-ингредиент)'
