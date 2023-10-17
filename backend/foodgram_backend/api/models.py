@@ -10,7 +10,10 @@ class User(AbstractUser):
                                 unique=True,
                                 verbose_name='Юзернейм',
                                 null=False,
-                                blank=False)
+                                blank=False,
+                                validators=[RegexValidator(
+                                    regex=r'^[\w.@+-]+\Z',
+                                )])
     first_name = models.CharField(max_length=150,
                                   verbose_name='Имя',
                                   null=False,
@@ -76,7 +79,6 @@ class Tag(models.Model):
         return self.name
 
 
-
 class Ingredient(models.Model):
     name = models.CharField(
         max_length=150,
@@ -93,6 +95,7 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
+
     def __str__(self):
         return self.name
 
@@ -138,11 +141,10 @@ class Recipe(models.Model):
         verbose_name='Время приготовления',
     )
 
-
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
-    
+
     def __str__(self):
         return self.name
 

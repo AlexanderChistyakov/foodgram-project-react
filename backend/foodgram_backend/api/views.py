@@ -7,7 +7,9 @@ from djoser import views
 
 from .models import User, Follow, Tag, Ingredient, Recipe
 from .permissions import IsAuthorOrReadOnly
-from .serializers import TagSerializer, IngredientDetailSerializer, IngredientAmountSerializer, RecipeSerializer, RecipeListSerializer, CustomUserSerializer
+from .serializers import (TagSerializer, IngredientDetailSerializer,
+                          RecipeSerializer, RecipeListSerializer,
+                          CustomUserSerializer, SubscriptionListSerializer)
 
 
 @api_view(['POST', 'DELETE'])
@@ -44,13 +46,39 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     ]
 
 
-
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
     ]
+
     def get_serializer_class(self):
         if self.action in ('list', 'retrive'):
             return RecipeListSerializer
         return RecipeSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        limit = self.request.query_params.get('limit')
+        if limit:
+            queryset = queryset[:int(limit)]
+        return queryset
+
+
+class UserListViewSet(views.UserViewSet):
+    serializer_class = CustomUserSerializer
+    queryset = User.objects.all()
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        limit = self.request.query_params.get('limit')
+        if limit:
+            queryset = queryset[:int(limit)]
+        return queryset
+
+
+class SubscriptionViewSet(viewsets.ModelViewSet):
+    serializer_class = SubscriptionListSerializer
+    queryset = Follow.objects.all()
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
