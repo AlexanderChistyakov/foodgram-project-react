@@ -13,7 +13,7 @@ router.register('users', views.UserListViewSet)
 
 
 urlpatterns = [
-    path('users/<int:id>/subscribe/', views.subscribe, name='subscribe'),
+    # path('users/<int:id>/subscribe/', views.subscribe, name='subscribe'),
     path('', include(router.urls)),
 
 ]

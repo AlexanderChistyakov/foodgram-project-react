@@ -54,7 +54,6 @@ class IngredientDetailSerializer(serializers.ModelSerializer):
 
 
 class IngredientAmountSerializer(serializers.ModelSerializer):
-
     id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     measurement_unit = serializers.SerializerMethodField()
@@ -142,15 +141,18 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
-        if request:
-            if not request.user.is_anonymous:
-                return Follow.objects.filter(
-                    user=request.user, author=obj
-                ).exists()
+        if request and not request.user.is_anonymous:
+            return Follow.objects.filter(
+                user=request.user, author=obj
+            ).exists()
         return False
 
     def get_recipes(self, obj):
         queryset = Recipe.objects.filter(author=obj)
+        request = self.context.get('request')
+        recipes_limit = request.query_params.get('recipes_limit')
+        if recipes_limit:
+            queryset = queryset[:int(recipes_limit)]
         return RecipeSerializerInSubscriptions(queryset, many=True).data
 
     def get_recipes_count(self, obj):

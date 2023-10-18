@@ -168,3 +168,16 @@ class RecipeIngredients(models.Model):
     class Meta:
         verbose_name = 'Мера(таблица m2m рецепт-ингредиент)'
         verbose_name_plural = 'Мера(таблица m2m рецепт-ингредиент)'
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='favorites',
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='favorites'
+    )
