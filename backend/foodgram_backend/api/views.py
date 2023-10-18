@@ -23,7 +23,9 @@ def subscribe(request, id):
             author=author
         ).exists():
             Follow.objects.create(user=request.user, author=author)
-            return Response(status=status.HTTP_201_CREATED)
+            follows = User.objects.filter(id=id).first()
+            serializer = SubscriptionListSerializer(follows)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
     elif request.method == 'DELETE':
         Follow.objects.filter(user=user, author=author).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
