@@ -10,7 +10,7 @@ router.register('tags', views.TagViewset)
 router.register('ingredients', views.IngredientViewSet)
 router.register('recipes', views.RecipeViewSet)
 router.register('users', views.UserListViewSet)
-# router.register('users/subscriptions', views.SubscriptionListSerializer)
+
 
 urlpatterns = [
     path('users/<int:id>/subscribe/', views.subscribe, name='subscribe'),

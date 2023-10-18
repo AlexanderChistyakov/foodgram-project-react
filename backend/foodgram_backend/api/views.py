@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from rest_framework.response import Response
 from rest_framework import status, viewsets, permissions
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from django.shortcuts import get_object_or_404
 from djoser import views
 
@@ -76,9 +76,16 @@ class UserListViewSet(views.UserViewSet):
         if limit:
             queryset = queryset[:int(limit)]
         return queryset
-
-
-class SubscriptionViewSet(viewsets.ModelViewSet):
-    serializer_class = SubscriptionListSerializer
-    queryset = Follow.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    @action(
+        detail=False,
+        url_path='subscriptions',
+        methods=('get',),
+        permission_classes=(permissions.IsAuthenticated,)
+    )
+    def subscriptions(self, request):
+        authors = User.objects.filter(following__user=request.user)
+        serializer = SubscriptionListSerializer(
+            authors, many=True, context={'request': request}
+        )
+        return Response(serializer.data)
