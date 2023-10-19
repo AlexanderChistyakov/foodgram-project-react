@@ -1,6 +1,8 @@
 from rest_framework.response import Response
 from rest_framework import status, viewsets, permissions
 from rest_framework.decorators import action
+
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser import views
 
@@ -123,6 +125,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(
+        detail=True,
+        methods=('post', 'delete'),
+        permission_classes=(permissions.IsAuthenticated,)
+    )
+    def download_shopping_cart(self, request):
+        user = request.user
+        ingredients = (Ingredient.objects.filter(
+            recipe_ingredients__recipe__shopping_cart__user=user
+        ))
+        ingredient_list = [ingredients.data]
+        return Response(ingredient_list, status=status.HTTP_200_OK)
 
 
 class UserListViewSet(views.UserViewSet):
