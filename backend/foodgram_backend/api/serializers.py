@@ -1,7 +1,9 @@
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 
-from .models import User, Follow, Tag, Ingredient, Recipe, RecipeIngredients
+from .models import (User, Follow, Tag,
+                     Ingredient, Recipe,
+                     RecipeIngredients, Favorite)
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
@@ -91,14 +93,23 @@ class RecipeListSerializer(serializers.ModelSerializer):
     ingredients = IngredientAmountSerializer(many=True)
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer()
+    is_favorited = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
         fields = (
-            'id', 'tags', 'author', 'ingredients',
+            'id', 'tags', 'author', 'ingredients', 'is_favorited',
             'name', 'image', 'text', 'cooking_time'
         )
         pagination_class = None
+
+    def get_is_favorited(self, obj):
+        request = self.context.get('request')
+        if request.user.is_anonymous:
+            return False
+        return Favorite.objects.filter(
+            user=request.user, recipe=obj
+        ).exists()
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -114,7 +125,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
 
-class RecipeSerializerInSubscriptions(serializers.ModelSerializer):
+class RecipeSerializerShort(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = (
@@ -153,7 +164,7 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
         recipes_limit = request.query_params.get('recipes_limit')
         if recipes_limit:
             queryset = queryset[:int(recipes_limit)]
-        return RecipeSerializerInSubscriptions(queryset, many=True).data
+        return RecipeSerializerShort(queryset, many=True).data
 
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author_id=obj.id).count()

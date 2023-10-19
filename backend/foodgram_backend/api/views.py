@@ -5,12 +5,13 @@ from django.shortcuts import get_object_or_404
 from djoser import views
 
 from .models import (User, Follow, Tag,
-                     Ingredient, Recipe, Favorite)
+                     Ingredient, Recipe,
+                     Favorite, ShoppingCart)
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (TagSerializer, IngredientDetailSerializer,
                           RecipeSerializer, RecipeListSerializer,
                           CustomUserSerializer, SubscriptionListSerializer,
-                          RecipeSerializerInSubscriptions)
+                          RecipeSerializerShort)
 
 
 class TagViewset(viewsets.ModelViewSet):
@@ -52,17 +53,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
         methods=('post', 'delete'),
         permission_classes=(permissions.IsAuthenticated,)
     )
-    def favorite(self, request, id):
+    def favorite(self, request, pk):
         user = request.user
-        recipe = get_object_or_404(recipe, id=id)
+        recipe = get_object_or_404(Recipe, id=pk)
         if request.method == 'POST':
             if not Favorite.objects.filter(
                 user=user,
                 recipe=recipe
             ).exists():
                 Favorite.objects.create(user=request.user, recipe=recipe)
-                favorites = User.objects.filter(id=id).first()
-                serializer = RecipeSerializerInSubscriptions(favorites)
+                recipes = Recipe.objects.filter(id=pk).first()
+                serializer = RecipeSerializerShort(recipes)
                 return Response(
                     serializer.data,
                     status=status.HTTP_201_CREATED
@@ -78,6 +79,44 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 recipe=recipe
             ).exists():
                 Favorite.objects.filter(user=user, recipe=recipe).delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(
+                {"errors": "Ошибка. Нет записи в БД для удаления."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(
+        detail=True,
+        methods=('post', 'delete'),
+        permission_classes=(permissions.IsAuthenticated,)
+    )
+    def shopping_cart(self, request, pk):
+        user = request.user
+        recipe = get_object_or_404(Recipe, id=pk)
+        if request.method == 'POST':
+            if not ShoppingCart.objects.filter(
+                user=user,
+                recipe=recipe
+            ).exists():
+                ShoppingCart.objects.create(user=request.user, recipe=recipe)
+                recipes = Recipe.objects.filter(id=pk).first()
+                serializer = RecipeSerializerShort(recipes)
+                return Response(
+                    serializer.data,
+                    status=status.HTTP_201_CREATED
+                )
+            else:
+                return Response(
+                    {"errors": "Ошибка добавления в список покупок."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        if request.method == 'DELETE':
+            if ShoppingCart.objects.filter(
+                user=user,
+                recipe=recipe
+            ).exists():
+                ShoppingCart.objects.filter(user=user, recipe=recipe).delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(
                 {"errors": "Ошибка. Нет записи в БД для удаления."},
