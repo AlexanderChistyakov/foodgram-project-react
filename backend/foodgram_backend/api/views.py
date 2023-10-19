@@ -4,11 +4,13 @@ from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from djoser import views
 
-from .models import User, Follow, Tag, Ingredient, Recipe
+from .models import (User, Follow, Tag,
+                     Ingredient, Recipe, Favorite)
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (TagSerializer, IngredientDetailSerializer,
                           RecipeSerializer, RecipeListSerializer,
-                          CustomUserSerializer, SubscriptionListSerializer)
+                          CustomUserSerializer, SubscriptionListSerializer,
+                          RecipeSerializerInSubscriptions)
 
 
 class TagViewset(viewsets.ModelViewSet):
@@ -44,6 +46,44 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if limit:
             queryset = queryset[:int(limit)]
         return queryset
+
+    @action(
+        detail=True,
+        methods=('post', 'delete'),
+        permission_classes=(permissions.IsAuthenticated,)
+    )
+    def favorite(self, request, id):
+        user = request.user
+        recipe = get_object_or_404(recipe, id=id)
+        if request.method == 'POST':
+            if not Favorite.objects.filter(
+                user=user,
+                recipe=recipe
+            ).exists():
+                Favorite.objects.create(user=request.user, recipe=recipe)
+                favorites = User.objects.filter(id=id).first()
+                serializer = RecipeSerializerInSubscriptions(favorites)
+                return Response(
+                    serializer.data,
+                    status=status.HTTP_201_CREATED
+                )
+            else:
+                return Response(
+                    {"errors": "Ошибка добавления в избранное."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        if request.method == 'DELETE':
+            if Favorite.objects.filter(
+                user=user,
+                recipe=recipe
+            ).exists():
+                Favorite.objects.filter(user=user, recipe=recipe).delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(
+                {"errors": "Ошибка. Нет записи в БД для удаления."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserListViewSet(views.UserViewSet):
