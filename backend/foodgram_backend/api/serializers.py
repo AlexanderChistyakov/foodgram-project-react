@@ -173,15 +173,36 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        counter = 0
+        tags_list =[]
+        ingredient_list=[]
         author = self.context.get('request').user
-        tags_id_list = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients') #в тегах id, а здесь OrderedDict!!!
-        print(tags_id_list, ingredients, 'fffff', sep='\n')
-        tags = [Tag.objects.get_or_create(id=id)[0] for id in tags_id_list]
-        # ingredients = [Ingredient.objects.get_or_create(name=name)[0] for name in ingredients_id_list]
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')  #в тегах id, а здесь OrderedDict!!!
+        # print(tags_id_list[0], ingredients, 'fffff', sep='\n')
+
+        # ingredients = [Ingredient.objects.get_or_create(id=id, amount=amount) for id, amount in ingredients_list]
         recipe = Recipe.objects.create(author=author, **validated_data)
-        recipe.tags.set(tags)
-        recipe.ingredients.set(ingredients)
+        for id in tags:
+            if id:
+                tag = Tag.objects.get(id=id)
+                tags_list.append(tag)
+                counter += 1
+        counter = 0
+        for item in ingredients:
+            for i in item:
+                print(i, 'ddddd')
+            # print(item[0], 'fffff')
+            # ingredient = Ingredient.objects.get(id=item[counter])
+            # recipe_ingredient = RecipeIngredients.objects.create(
+            #     recipe=recipe,
+            #     ingredient=ingredient,
+            #     amount=item[counter]['amount']
+            # )
+            # ingredient_list.append(recipe_ingredient)
+            # counter += 1
+        recipe.tags.set(tags_list)
+        # recipe.ingredients.set(ingredients)
         return recipe
 
 
