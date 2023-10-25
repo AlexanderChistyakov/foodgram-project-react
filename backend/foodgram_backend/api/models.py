@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinValueValidator
 
 
 class User(AbstractUser):
@@ -74,6 +74,7 @@ class Tag(models.Model):
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
+        ordering = ('name',)
 
     def __str__(self):
         return self.name
@@ -87,7 +88,7 @@ class Ingredient(models.Model):
         verbose_name='Название ингредиента',
     )
     measurement_unit = models.CharField(
-        max_length=10,
+        max_length=200,
         blank=False,
         verbose_name='Название меры',
     )
@@ -95,6 +96,13 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
+        ordering = ('name',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=('name', 'measurement_unit'),
+                name='unique_ingredient',
+            )
+        ]
 
     def __str__(self):
         return self.name
@@ -111,11 +119,11 @@ class Recipe(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='recipes',
+        verbose_name='Автор рецепта',
     )
     tags = models.ManyToManyField(
         Tag,
         related_name='recipes',
-        blank=True,
         verbose_name='Теги',
     )
     ingredients = models.ManyToManyField(
@@ -137,12 +145,17 @@ class Recipe(models.Model):
     cooking_time = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name='Время приготовления',
+        verbose_name='Время приготовления в минутах',
+    )
+    pub_date = models.DateTimeField(
+        'Дата публикации рецепта',
+        auto_now_add=True,
     )
 
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
+        ordering = ('-pub_date',)
 
     def __str__(self):
         return self.name
@@ -153,15 +166,18 @@ class RecipeIngredients(models.Model):
         Recipe,
         on_delete=models.CASCADE,
         related_name='recipe_ingredients',
+        verbose_name='Рецепт',
     )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        related_name='recipe_ingredients',
+        related_name='ingredient_recipes',
+        verbose_name='Ингридиент',
     )
     amount = models.PositiveIntegerField(
         blank=False,
         verbose_name='Количество',
+        validators=[MinValueValidator(1, 'Не меньше 1.')]
     )
 
     class Meta:

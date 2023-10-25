@@ -196,23 +196,17 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        print(validated_data)
         tags_list = []
         ingredient_list = []
-
         author = self.context.get('request').user
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-  
         recipe = Recipe.objects.create(author=author, **validated_data)
-
         for id in tags:
             if id:
                 tag = Tag.objects.get(id=id)
                 tags_list.append(tag)
-
         for ingredient_data in ingredients:
-
             ingredient = Ingredient.objects.get(pk=ingredient_data['id'])
             RecipeIngredients.objects.create(
                 recipe=recipe,
@@ -224,6 +218,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         recipe.ingredients.set(ingredient_list)
         return recipe
 
+    def to_representation(self, instance) -> dict:
+        request = self.context.get('request')
+        context = {'request': request}
+        return RecipeSerializer(instance, context=context).data
 
 class RecipeSerializerShort(serializers.ModelSerializer):
     image = Base64ImageField(required=False, allow_null=True)
