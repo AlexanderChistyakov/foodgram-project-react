@@ -153,7 +153,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     tags = serializers.ListField(
         child=serializers.IntegerField(min_value=0)
     )
-    ingredients = IngredientAmountSerializer(many=True)
+    ingredients = serializers.ListField(child=serializers.DictField())
     image = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
@@ -173,37 +173,29 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        counter = 0
-        tags_list =[]
-        ingredient_list=[]
+        tags_list = []
+        ingredient_list = []
         author = self.context.get('request').user
         tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')  #в тегах id, а здесь OrderedDict!!!
-        # print(tags_id_list[0], ingredients, 'fffff', sep='\n')
-
-        # ingredients = [Ingredient.objects.get_or_create(id=id, amount=amount) for id, amount in ingredients_list]
+        ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(author=author, **validated_data)
         for id in tags:
             if id:
                 tag = Tag.objects.get(id=id)
                 tags_list.append(tag)
-                counter += 1
-        counter = 0
-        for item in ingredients:
-            for i in item:
-                print(i, 'ddddd')
-            # print(item[0], 'fffff')
-            # ingredient = Ingredient.objects.get(id=item[counter])
-            # recipe_ingredient = RecipeIngredients.objects.create(
-            #     recipe=recipe,
-            #     ingredient=ingredient,
-            #     amount=item[counter]['amount']
-            # )
-            # ingredient_list.append(recipe_ingredient)
-            # counter += 1
         recipe.tags.set(tags_list)
-        # recipe.ingredients.set(ingredients)
+        for ingredient_data in ingredients:
+            ingredient = Ingredient.objects.get(pk=ingredient_data['id'])
+            RecipeIngredients.objects.create(
+                recipe=recipe,
+                ingredient=ingredient,
+                amount=ingredient_data['amount']
+            )
+            ingredient_list.append(ingredient)
+        recipe.ingredients.set(ingredient_list)
         return recipe
+
+
 
 
 class RecipeSerializerShort(serializers.ModelSerializer):
@@ -211,9 +203,7 @@ class RecipeSerializerShort(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = (
-            'id', 'name', 'image', 'cooking_time'
-        )
+        fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class SubscriptionListSerializer(serializers.ModelSerializer):
