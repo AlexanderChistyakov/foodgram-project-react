@@ -1,6 +1,6 @@
 from django.conf import settings
-from django.db import models
 from django.core.validators import RegexValidator, MinValueValidator
+from django.db import models
 
 
 class Tag(models.Model):

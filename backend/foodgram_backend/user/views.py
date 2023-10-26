@@ -1,15 +1,13 @@
-from rest_framework.response import Response
-from rest_framework import status, permissions
-from rest_framework.decorators import action
-
-
 from django.shortcuts import get_object_or_404
 from djoser import views
 
-from .models import User, Follow
-
+from rest_framework import permissions, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from user.serializers import CustomUserSerializer
+
 from recipe.serializers import SubscriptionListSerializer
+from user.models import Follow, User
 
 
 class UserListViewSet(views.UserViewSet):
@@ -45,7 +43,7 @@ class UserListViewSet(views.UserViewSet):
         permission_classes=(permissions.IsAuthenticated,)
     )
     def subscribe(self, request, id):
-        """Подписка на автора."""
+        """Подписка на автора, отписка."""
         user = request.user
         author = get_object_or_404(User, id=id)
         if request.method == 'POST':
