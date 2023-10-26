@@ -1,24 +1,22 @@
+from django.db.models import Sum
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+
 from rest_framework.response import Response
 from rest_framework import status, viewsets, permissions
 from rest_framework.decorators import action
 
-from django.db.models import Sum
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from djoser import views
 
-from .models import (User, Follow, Tag,
-                     Ingredient, Recipe,
-                     Favorite, ShoppingCart,
-                     RecipeIngredients)
-from .permissions import IsAuthorOrReadOnly
-from .serializers import (TagSerializer, IngredientDetailSerializer,
-                          RecipeSerializer, RecipeListSerializer,
-                          CustomUserSerializer, SubscriptionListSerializer,
-                          RecipeSerializerShort, RecipeCreateSerializer)
+from api.permissions import IsAuthorOrReadOnly
+from recipe.serializers import (TagSerializer, IngredientDetailSerializer,
+                                RecipeSerializer, RecipeListSerializer,
+                                RecipeSerializerShort, RecipeCreateSerializer)
+from recipe.models import (Tag, Ingredient, Recipe,
+                           Favorite, ShoppingCart, RecipeIngredients)
 
 
 class TagViewset(viewsets.ModelViewSet):
+    """Представление тегов."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [
@@ -27,6 +25,7 @@ class TagViewset(viewsets.ModelViewSet):
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+    """Представление ингредиентов."""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientDetailSerializer
     permission_classes = [
@@ -35,12 +34,14 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
+    """Представление рецептов."""
     queryset = Recipe.objects.all()
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
     ]
 
     def get_serializer_class(self):
+        """Выбор сериализатора рецептов."""
         if self.action in ('list', 'retrive'):
             return RecipeListSerializer
         if self.action in ('create', 'update', 'partial_update'):
@@ -48,6 +49,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return RecipeSerializer
 
     def get_queryset(self):
+        """Получение кверисета."""
         queryset = super().get_queryset()
         limit = self.request.query_params.get('limit')
         if limit:
@@ -60,6 +62,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(permissions.IsAuthenticated,)
     )
     def favorite(self, request, pk):
+        """Добавление рецепта в избранное, удаление из избранного."""
         user = request.user
         recipe = get_object_or_404(Recipe, id=pk)
         if request.method == 'POST':
@@ -98,6 +101,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(permissions.IsAuthenticated,)
     )
     def shopping_cart(self, request, pk):
+        """Добавление рецепта в список покупок, удаление из списка покупок."""
         user = request.user
         recipe = get_object_or_404(Recipe, id=pk)
         if request.method == 'POST':
@@ -136,6 +140,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(permissions.IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
+        """Скачивание txt-файла со списком покупок."""
         shopping_cart = ShoppingCart.objects.filter(
             user=request.user
         ).values_list('recipe_id', flat=True)
@@ -163,67 +168,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
-
-
-class UserListViewSet(views.UserViewSet):
-    serializer_class = CustomUserSerializer
-    queryset = User.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        limit = self.request.query_params.get('limit')
-        if limit:
-            queryset = queryset[:int(limit)]
-        return queryset
-
-    @action(
-        detail=False,
-        url_path='subscriptions',
-        methods=('get',),
-        permission_classes=(permissions.IsAuthenticated,)
-    )
-    def subscriptions(self, request):
-        authors = User.objects.filter(following__user=request.user)
-        serializer = SubscriptionListSerializer(
-            authors, many=True, context={'request': request}
-        )
-        return Response(serializer.data)
-
-    @action(
-        detail=True,
-        methods=('post', 'delete'),
-        permission_classes=(permissions.IsAuthenticated,)
-    )
-    def subscribe(self, request, id):
-        user = request.user
-        author = get_object_or_404(User, id=id)
-        if request.method == 'POST':
-            if user != author and not Follow.objects.filter(
-                user=user,
-                author=author
-            ).exists():
-                Follow.objects.create(user=request.user, author=author)
-                follows = User.objects.filter(id=id).first()
-                serializer = SubscriptionListSerializer(follows)
-                return Response(
-                    serializer.data,
-                    status=status.HTTP_201_CREATED
-                )
-            else:
-                return Response(
-                    {"errors": "Ошибка подписки."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-        if request.method == 'DELETE':
-            if user != author and Follow.objects.filter(
-                user=user,
-                author=author
-            ).exists():
-                Follow.objects.filter(user=user, author=author).delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(
-                {"errors": "Ошибка. Нет записи в БД для удаления."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        return Response(status=status.HTTP_400_BAD_REQUEST)

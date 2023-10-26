@@ -1,54 +1,10 @@
+from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator, MinValueValidator
 
 
-class User(AbstractUser):
-    email = models.EmailField(unique=True,
-                              verbose_name='Email')
-    username = models.CharField(max_length=150,
-                                unique=True,
-                                verbose_name='Юзернейм',
-                                null=False,
-                                blank=False,
-                                validators=[RegexValidator(
-                                    regex=r'^[\w.@+-]+\Z',
-                                )])
-    first_name = models.CharField(max_length=150,
-                                  verbose_name='Имя',
-                                  null=False,
-                                  blank=False)
-    last_name = models.CharField(max_length=150,
-                                 verbose_name='Фамилия',
-                                 null=False,
-                                 blank=False)
-
-
-class Follow(models.Model):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='follower'
-    )
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='following'
-    )
-
-    class Meta:
-        verbose_name = 'Подписка'
-        verbose_name_plural = 'Подписки'
-
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'author'],
-                name='unique_user_author'
-            )
-        ]
-
-
 class Tag(models.Model):
+    """Модель тега."""
     name = models.CharField(
         max_length=50,
         unique=True,
@@ -81,6 +37,7 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
+    """Модель ингредиента."""
     name = models.CharField(
         max_length=150,
         unique=True,
@@ -109,6 +66,7 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
+    """Модель рецепта."""
     name = models.CharField(
         max_length=150,
         unique=True,
@@ -116,7 +74,7 @@ class Recipe(models.Model):
         verbose_name='Название рецепта',
     )
     author = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='recipes',
         verbose_name='Автор рецепта',
@@ -134,7 +92,7 @@ class Recipe(models.Model):
     )
     image = models.ImageField(
         verbose_name='Картинка',
-        upload_to='recipes/images/',
+        upload_to='media/images/',
         default='api/default_recipe.jpg',
         help_text='Загрузка картинки к рецепту',
     )
@@ -162,6 +120,7 @@ class Recipe(models.Model):
 
 
 class RecipeIngredients(models.Model):
+    """Модель связи рецепта и ингредиента."""
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
@@ -186,8 +145,9 @@ class RecipeIngredients(models.Model):
 
 
 class Favorite(models.Model):
+    """Модель избранного."""
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='favorites',
     )
@@ -199,8 +159,9 @@ class Favorite(models.Model):
 
 
 class ShoppingCart(models.Model):
+    """Модель корзины."""
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='shopping_cart',
     )
