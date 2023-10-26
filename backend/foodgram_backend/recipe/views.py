@@ -1,6 +1,7 @@
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
@@ -39,6 +40,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
     ]
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = (#'is_favorited', 'is_in_shopping_cart',
+                        'author', 'tags')
 
     def get_serializer_class(self):
         """Выбор сериализатора рецептов."""
