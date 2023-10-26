@@ -41,8 +41,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
     ]
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = (#'is_favorited', 'is_in_shopping_cart',
-                        'author', 'tags')
+    filterset_fields = ('author', 'tags',
+                        'shopping_cart__recipe')
 
     def get_serializer_class(self):
         """Выбор сериализатора рецептов."""
@@ -58,6 +58,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
         limit = self.request.query_params.get('limit')
         if limit:
             queryset = queryset[:int(limit)]
+        if self.request.query_params.get('author'):
+            queryset = queryset.filter(
+                author=self.request.query_params.get('author')
+            )
+        if self.request.query_params.get('is_in_shopping_cart'):
+            queryset = queryset.filter(
+                shopping_cart__user=self.request.user
+            )
+        if self.request.query_params.get('tags'):
+            queryset = queryset.filter(
+                tags__slug=self.request.query_params.get('tags')
+            )
+        if self.request.query_params('is_favorited'):
+            queryset = queryset.filter(
+                favorite__user=self.request.user
+            )
         return queryset
 
     @action(
