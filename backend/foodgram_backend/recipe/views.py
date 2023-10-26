@@ -1,7 +1,6 @@
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
@@ -40,9 +39,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
     ]
-    filter_backends = (DjangoFilterBackend,)
-    # filterset_fields = ('author', 'tags',
-    #                     'shopping_cart__recipe')
 
     def get_serializer_class(self):
         """Выбор сериализатора рецептов."""
@@ -62,18 +58,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(
                 author=self.request.query_params.get('author')
             )
-        if self.request.query_params.get('is_in_shopping_cart'): #и 0, и 1 выдает с тру
+        if self.request.query_params.get('is_in_shopping_cart') == '1':
             queryset = queryset.filter(
                 shopping_cart__user=self.request.user
             )
+        if self.request.query_params.get('is_in_shopping_cart') == '0':
+            queryset = queryset.filter(shopping_cart__isnull=True)
         if self.request.query_params.get('tags'):
             queryset = queryset.filter(
                 tags__slug=self.request.query_params.get('tags')
             )
-        # if self.request.query_params('is_favorited'):
-        #     queryset = queryset.filter(
-        #         favorites__user=self.request.user
-        #     )
+        if self.request.query_params('is_favorited') == '1':
+            queryset = queryset.filter(
+                favorites__user=self.request.user
+            )
+        if self.request.query_params.get('is_favorited') == '0':
+            queryset = queryset.filter(favorites__isnull=True)
         return queryset
 
     @action(
