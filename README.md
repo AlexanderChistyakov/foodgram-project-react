@@ -1,1 +1,3 @@
-# praktikum_new_diplom
+</h1 align="center"> <a href="https://chstykv.webhop.me/" target="_blank">Foodgram</a> - сайт с рецептами.</h1>
+
+<h3 align="center">API фудграма включает в себя регистрацию пользователя, подписки, избранные рецепты, корзину покупок и выгрузку списка продуктов для покупки из корзины.</h3>
