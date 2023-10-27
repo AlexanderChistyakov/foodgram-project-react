@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser import views
 
 from rest_framework import permissions, status
@@ -14,7 +15,9 @@ class UserListViewSet(views.UserViewSet):
     """Представление пользователей."""
     serializer_class = CustomUserSerializer
     queryset = User.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('username', 'email')
 
     def get_queryset(self):
         queryset = super().get_queryset()
