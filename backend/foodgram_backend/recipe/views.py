@@ -6,7 +6,7 @@ from rest_framework import permissions, status, viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api.permissions import IsAuthorOrReadOnly
+from api.permissions import IsAuthorOrReadOnly, IsAdminOrReadOnly
 from recipe.models import (Favorite, Ingredient, Recipe, RecipeIngredients,
                            ShoppingCart, Tag)
 from recipe.serializers import (IngredientDetailSerializer,
@@ -19,9 +19,7 @@ class TagViewset(viewsets.ModelViewSet):
     """Представление тегов."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly
-    ]
+    permission_classes = [IsAdminOrReadOnly,]
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
