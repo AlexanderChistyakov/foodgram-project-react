@@ -2,7 +2,7 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
-from rest_framework import permissions, status, viewsets
+from rest_framework import permissions, status, viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -31,6 +31,8 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly
     ]
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -68,7 +70,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(
                 tags__slug=self.request.query_params.get('tags')
             )
-        if self.request.query_params('is_favorited') == '1':
+        if self.request.query_params.get('is_favorited') == '1':
             queryset = queryset.filter(
                 favorites__user=self.request.user
             )
