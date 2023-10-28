@@ -15,11 +15,16 @@ from recipe.serializers import (IngredientDetailSerializer,
                                 TagSerializer)
 
 
-class TagViewset(viewsets.ModelViewSet):
+class TagViewset(viewsets.ReadOnlyModelViewSet):
     """Представление тегов."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [IsAdminOrReadOnly,]
+
+    def list(self, request):
+        serializer = self.serializer_class(self.queryset, many=True)
+        data = serializer.data[:]
+        return Response(data)
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -31,6 +36,12 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     ]
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+
+    def list(self, _):
+        """Получение ингредиентов в виде списка."""
+        serializer = self.serializer_class(self.queryset, many=True)
+        data = serializer.data[:]
+        return Response(data)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):

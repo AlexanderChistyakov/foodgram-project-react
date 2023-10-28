@@ -65,6 +65,34 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
         return recipe_ingredient.amount
 
 
+class IngredientAmountSerializerForNewRecipe(serializers.ModelSerializer):
+    """Сериализатор количества ингредиента."""
+    id = serializers.SerializerMethodField()
+    amount = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RecipeIngredients
+        fields = ('id',  'amount')
+        pagination_class = None
+
+    def get_ingredient(self, obj):
+        """Получение ингредиента по id для следующих методов."""
+        return Ingredient.objects.filter(name=obj).first()
+
+    def get_id(self, obj):
+        """Получение id ингредиента."""
+        ingredient = self.get_ingredient(obj)
+        return ingredient.id
+
+    def get_amount(self, obj):
+        """Получение количества ингредиента."""
+        ingredient = self.get_ingredient(obj)
+        recipe_ingredient = RecipeIngredients.objects.filter(
+            ingredient_id=ingredient.id
+        ).first()
+        return recipe_ingredient.amount
+
+
 class Base64ImageField(serializers.ImageField):
     """Сериализатор для картинок."""
     def to_internal_value(self, data):
@@ -126,6 +154,19 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
 
+class RecipeDetailSerializer(serializers.ModelSerializer):
+    """Сериализатор для одного рецепта после создания."""
+    ingredients = IngredientAmountSerializerForNewRecipe(many=True)
+    image = Base64ImageField(required=False, allow_null=True)
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'ingredients', 'tags', 'image',
+            'name',  'text', 'cooking_time'
+        )
+
+
 class RecipeCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания рецепта."""
     tags = serializers.ListField(
@@ -177,7 +218,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         request = self.context.get('request')
         context = {'request': request}
-        return RecipeSerializer(instance, context=context).data
+        return RecipeDetailSerializer(instance, context=context).data
 
 
 class RecipeSerializerShort(serializers.ModelSerializer):
@@ -220,9 +261,10 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
         """Получение рецептов."""
         queryset = Recipe.objects.filter(author=obj)
         request = self.context.get('request')
-        recipes_limit = request.query_params.get('recipes_limit')
-        if recipes_limit:
-            queryset = queryset[:int(recipes_limit)]
+        if request:
+            recipes_limit = request.query_params.get('recipes_limit')
+            if recipes_limit:
+                queryset = queryset[:int(recipes_limit)]
         return RecipeSerializerShort(queryset, many=True).data
 
     def get_recipes_count(self, obj):

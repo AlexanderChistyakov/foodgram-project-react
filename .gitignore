@@ -130,3 +130,10 @@ dmypy.json
 
 # .idea
 .idea
+
+/media
+media/
+
+.png
+
+postman_collection/

@@ -1,0 +1,78 @@
+# Регистрация пользователя 
+GET http://127.0.0.1:8000/api/users/me
+Content-type: application/json
+Authorization: Token e1123f0b367215cb657c3ee24216db41157c8f54
+ 
+{ 
+    "username": "newguy3", 
+    "first_name": "new", 
+    "last_name": "guy", 
+    "email": "test3@tes.ru", 
+    "password": "dddddddd8"  
+} 
+ 
+### 
+# Получение токена 
+POST http://127.0.0.1:8000/api/auth/token/login/ 
+Content-type: application/json 
+ 
+{ 
+    "email": "test3@test.ru", 
+    "password": "dddddddd8"  
+} 
+ 
+### 
+#Теги
+GET http://127.0.0.1:8000/api/tags/1
+Content-type: application/json 
+#Authorization: Token e1123f0b367215cb657c3ee24216db41157c8f54 
+ 
+{ 
+    "name": "pfsdfdnhfr", 
+    "color": "#efefef", 
+    "slug": "udsfhsdfin" 
+} 
+ 
+### 
+#Список ингредиентов 
+GET http://127.0.0.1:8000/api/ingredients/ 
+Content-type: application/json 
+Authorization: Token e1123f0b367215cb657c3ee24216db41157c8f54  
+ 
+ 
+### 
+# Создать рецепт 
+POST http://127.0.0.1:8000/api/recipes/ 
+Content-type: application/json 
+Authorization: Token 15b8cb85be5a88afcd46a72a937be3f4b1cecd49 
+ 
+{ 
+    "ingredients": [ 
+        { 
+            "id": 1, 
+            "amount": 10 
+        } 
+    ], 
+    "tags": [ 
+        1, 
+        2 
+    ], 
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAgMAAABieywaAAAACVBMVEUAAAD///9fX1/S0ecCAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg==", 
+    "name": "striт", 
+    "text": "string", 
+    "cooking_time": 1 
+} 
+ 
+ 
+### 
+# Список рецептов 
+GET http://127.0.0.1:8000/api/recipes/?is_in_shopping_cart=0 
+Content-type: application/json 
+Authorization: Token 15b8cb85be5a88afcd46a72a937be3f4b1cecd49 
+ 
+ 
+### 
+# Добавление в корзину 
+POST http://127.0.0.1:8000/api/recipes/1/shopping_cart/ 
+Content-type: application/json 
+Authorization: Token 15b8cb85be5a88afcd46a72a937be3f4b1cecd49

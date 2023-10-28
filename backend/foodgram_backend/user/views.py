@@ -13,7 +13,7 @@ from user.models import Follow, User
 
 class UserListViewSet(views.UserViewSet):
     """Представление пользователей."""
-    serializer_class = CustomUserSerializer
+    # serializer_class = CustomUserSerializer
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
     filter_backends = (DjangoFilterBackend,)
@@ -43,6 +43,7 @@ class UserListViewSet(views.UserViewSet):
     @action(
         detail=True,
         methods=('post', 'delete'),
+        url_path='subscribe',
         permission_classes=(permissions.IsAuthenticated,)
     )
     def subscribe(self, request, id):
@@ -78,3 +79,28 @@ class UserListViewSet(views.UserViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(
+        detail=False,
+        url_path='me',
+        methods=('get', 'patch'),
+        permission_classes=(permissions.IsAuthenticated,)
+    )
+    def me(self, request):
+        """Представление авторизованного пользователя."""
+        if request.user.is_anonymous:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        if request.method == 'GET':
+            serializer = CustomUserSerializer(
+                request.user, context={'request': request}
+            )
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        if request.method == 'PATCH':
+            serializer = self.get_serializer(
+                request.user, data=request.data, partial=True
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save(role=request.user.role)
+        else:
+            serializer = self.get_serializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)

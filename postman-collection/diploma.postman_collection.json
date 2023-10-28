@@ -1883,6 +1883,72 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "get_token_for_first_user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const responseData = pm.response.json();",
+											"const responseSchema = {",
+											"    \"type\": \"object\",",
+											"    \"properties\":{",
+											"        \"auth_token\": {\"type\": \"string\"},",
+											"    },",
+											"    \"required\": [\"auth_token\"],",
+											"    \"additionalProperties\": false",
+											"};",
+											"",
+											"pm.test(\"Статус-код ответа должен быть 200\", function () {",
+											"    pm.expect(",
+											"        pm.response.status,",
+											"        \"Убедитесь, что запроc на получение токена, содержащий корректные данные, возвращает ответ со статус-кодом 200\"",
+											"    ).to.be.eql(\"OK\");",
+											"});",
+											"pm.test('Структура ответа соответствует ожидаемой', function () {",
+											"    pm.response.to.have.jsonSchema(responseSchema);",
+											"    const auth_token = _.get(responseData, \"auth_token\");",
+											"    if (auth_token) {",
+											"        pm.collectionVariables.set(\"userToken\", auth_token);",
+											"    }",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": {{email}},\n    \"password\": {{password}}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/auth/token/login/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"token",
+										"login",
+										""
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},
@@ -8942,7 +9008,7 @@
 					"response": []
 				},
 				{
-					"name": "get_recipes_list_with_is_favorited_cart_param // User",
+					"name": "get_recipes_list_with_is_favorited_param // User",
 					"event": [
 						{
 							"listen": "test",
@@ -9095,7 +9161,7 @@
 					"response": []
 				},
 				{
-					"name": "get_recipes_list_with_is_favorited_cart_param // No Auth",
+					"name": "get_recipes_list_with_is_favorited_param // No Auth",
 					"event": [
 						{
 							"listen": "test",
