@@ -19,7 +19,7 @@ class TagViewset(viewsets.ReadOnlyModelViewSet):
     """Представление тегов."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [IsAdminOrReadOnly,]
+    permission_classes = [IsAdminOrReadOnly, ]
 
     def list(self, request):
         serializer = self.serializer_class(self.queryset, many=True)

@@ -72,7 +72,7 @@ class IngredientAmountSerializerForNewRecipe(serializers.ModelSerializer):
 
     class Meta:
         model = RecipeIngredients
-        fields = ('id',  'amount')
+        fields = ('id', 'amount')
         pagination_class = None
 
     def get_ingredient(self, obj):
@@ -163,7 +163,7 @@ class RecipeDetailSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = (
             'ingredients', 'tags', 'image',
-            'name',  'text', 'cooking_time'
+            'name', 'text', 'cooking_time'
         )
 
 

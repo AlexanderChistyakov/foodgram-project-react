@@ -15,7 +15,7 @@ class UserListViewSet(views.UserViewSet):
     """Представление пользователей."""
     # serializer_class = CustomUserSerializer
     queryset = User.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('username', 'email')
 
