@@ -1,0 +1,5 @@
+[flake8]
+exclude =
+    backend/foodgram_backend/recipe/migrations/
+    backend/foodgram_backend/user/migrations/
+    backend/foodgram_backend/foodgram_backend/settings.py

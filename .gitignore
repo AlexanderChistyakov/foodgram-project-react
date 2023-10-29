@@ -137,3 +137,5 @@ media/
 .png
 
 postman_collection/
+
+.http
