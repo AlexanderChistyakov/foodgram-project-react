@@ -12,7 +12,7 @@ SECRET_KEY = 'django-insecure-%x1o=6b17ql9a146&@p)9ko@6vrlglv(qsdkum2phvna-+t64k
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'chstykv.webhop.me']
 
 
 MEDIA_URL = '/media/'
