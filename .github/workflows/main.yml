@@ -111,7 +111,7 @@ jobs:
       - build_and_push_to_docker_hub
       - build_frontend_and_push_to_docker_hub
       - build_gateway_and_push_to_docker_hub
-
+    if: github.ref == 'refs/heads/master'
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
