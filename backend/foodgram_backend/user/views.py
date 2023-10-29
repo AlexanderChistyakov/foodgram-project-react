@@ -1,14 +1,12 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser import views
-
+from recipe.serializers import SubscriptionListSerializer
 from rest_framework import permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from user.serializers import CustomUserSerializer
-
-from recipe.serializers import SubscriptionListSerializer
 from user.models import Follow, User
+from user.serializers import CustomUserSerializer
 
 
 class UserListViewSet(views.UserViewSet):

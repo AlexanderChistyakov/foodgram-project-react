@@ -2,7 +2,6 @@ from django.contrib import admin
 from recipe.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 from user.models import Follow, User
 
-
 admin.site.register(Follow)
 admin.site.register(Tag)
 admin.site.register(ShoppingCart)

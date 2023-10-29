@@ -1,25 +1,22 @@
+from api.permissions import IsAuthorOrReadOnly
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-
-from rest_framework import permissions, status, viewsets, filters
-from rest_framework.decorators import action
-from rest_framework.response import Response
-
-from api.permissions import IsAuthorOrReadOnly
 from recipe.models import (Favorite, Ingredient, Recipe, RecipeIngredients,
                            ShoppingCart, Tag)
 from recipe.serializers import (IngredientDetailSerializer,
                                 RecipeCreateSerializer, RecipeListSerializer,
                                 RecipeSerializer, RecipeSerializerShort,
                                 TagSerializer)
+from rest_framework import filters, permissions, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class TagViewset(viewsets.ReadOnlyModelViewSet):
     """Представление тегов."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-
 
     def list(self, request):
         serializer = self.serializer_class(self.queryset, many=True)
