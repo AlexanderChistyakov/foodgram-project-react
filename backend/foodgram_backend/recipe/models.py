@@ -170,3 +170,10 @@ class ShoppingCart(models.Model):
         on_delete=models.CASCADE,
         related_name='shopping_cart'
     )
+
+    class Meta:
+        verbose_name = 'Корзина'
+        verbose_name_plural = 'Пользовательские корзины'
+
+    def __str__(self):
+        return self.user

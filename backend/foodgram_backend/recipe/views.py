@@ -6,7 +6,7 @@ from rest_framework import permissions, status, viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api.permissions import IsAuthorOrReadOnly, IsAdminOrReadOnly
+from api.permissions import IsAuthorOrReadOnly
 from recipe.models import (Favorite, Ingredient, Recipe, RecipeIngredients,
                            ShoppingCart, Tag)
 from recipe.serializers import (IngredientDetailSerializer,
@@ -19,7 +19,7 @@ class TagViewset(viewsets.ReadOnlyModelViewSet):
     """Представление тегов."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [IsAdminOrReadOnly, ]
+
 
     def list(self, request):
         serializer = self.serializer_class(self.queryset, many=True)
@@ -31,9 +31,9 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """Представление ингредиентов."""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientDetailSerializer
-    permission_classes = [
+    permission_classes = (
         permissions.IsAuthenticatedOrReadOnly
-    ]
+    )
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
@@ -47,9 +47,9 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     """Представление рецептов."""
     queryset = Recipe.objects.all()
-    permission_classes = [
+    permission_classes = (
         permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
-    ]
+    )
 
     def get_serializer_class(self):
         """Выбор сериализатора рецептов."""
