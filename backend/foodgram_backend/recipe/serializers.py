@@ -4,7 +4,7 @@ from django.core.files.base import ContentFile
 from recipe.models import (Favorite, Ingredient, Recipe, RecipeIngredients,
                            ShoppingCart, Tag)
 from rest_framework import serializers
-from user.models import Follow
+from user.models import Follow, User
 from user.serializers import CustomUserSerializer
 
 
@@ -30,16 +30,30 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     measurement_unit = serializers.CharField()
-    # amount = serializers.IntegerField()
+    amount = serializers.SerializerMethodField()
 
     class Meta:
-        model = RecipeIngredients
+        model = Ingredient
         fields = (
             'id',
             'name',
             'measurement_unit',
             'amount'
         )
+
+    def get_ingredient(self, obj):
+        """Получение ингредиента по id для следующих методов."""
+
+        return Ingredient.objects.filter(name=obj).first()
+
+    def get_amount(self, obj):
+        """Получение количества ингредиента."""
+
+        ingredient = self.get_ingredient(obj)
+        recipe_ingredient = RecipeIngredients.objects.filter(
+            ingredient_id=ingredient.id
+        ).first()
+        return recipe_ingredient.amount
 
 
 class IngredientAmountSerializerForNewRecipe(serializers.ModelSerializer):
@@ -168,14 +182,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             'name', 'image', 'text', 'cooking_time'
         )
         read_only_fields = ('author',)
-        extra_kwargs = {
-            'name': {'required': True},
-            'text': {'required': True},
-            'cooking_time': {'required': True},
-            'image': {'required': True},
-            'ingredients': {'required': True},
-            'tags': {'required': True},
-        }
 
     def create(self, validated_data):
         """Создание рецепта."""
@@ -221,11 +227,9 @@ class RecipeSerializerShort(serializers.ModelSerializer):
 class SubscriptionListSerializer(serializers.ModelSerializer):
     """Сериализатор для подписок."""
 
-    email = serializers.PrimaryKeyRelatedField(read_only=True)
-    id = serializers.PrimaryKeyRelatedField(read_only=True)
-    username = serializers.PrimaryKeyRelatedField(read_only=True)
-    first_name = serializers.PrimaryKeyRelatedField(read_only=True)
-    last_name = serializers.PrimaryKeyRelatedField(read_only=True)
+    email = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), source='user'
+    )
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
@@ -236,6 +240,18 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
             'email', 'id', 'username', 'first_name',
             'last_name', 'is_subscribed', 'recipes', 'recipes_count'
         )
+
+    def to_representation(self, instance):
+        """Переопределение метода to_representation для возвращения полей
+        по первичному ключу."""
+
+        return {
+            'email': instance.email,
+            'id': instance.id,
+            'username': instance.username,
+            'first_name': instance.first_name,
+            'last_name': instance.last_name,
+        }
 
     def get_is_subscribed(self, obj):
         """Проверка наличия подписки."""
@@ -266,7 +282,6 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
     """Сериализатор для корзины."""
-
     ingredient = serializers.SerializerMethodField()
     amount = serializers.SerializerMethodField()
 
@@ -276,10 +291,8 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
 
     def get_ingredient(self, obj):
         """Получение ингредиента."""
-
         return obj.recipe.ingredients.all().first()
 
     def get_amount(self, obj):
         """Получение количества."""
-
         return obj.recipe.recipe_ingredients.all().first().amount

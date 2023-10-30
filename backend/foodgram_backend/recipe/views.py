@@ -30,9 +30,6 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Ingredient.objects.all()
     serializer_class = IngredientDetailSerializer
-    permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
-    )
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 

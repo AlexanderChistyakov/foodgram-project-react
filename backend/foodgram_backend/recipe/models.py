@@ -78,7 +78,6 @@ class Recipe(models.Model):
     name = models.CharField(
         max_length=MODELS_FIELDS_MAX_LENGTH,
         unique=True,
-        blank=False,
         verbose_name='Название рецепта',
     )
     author = models.ForeignKey(
@@ -139,7 +138,7 @@ class RecipeIngredients(models.Model):
         Ingredient,
         on_delete=models.CASCADE,
         related_name='ingredient_recipes',
-        verbose_name='Ингридиент',
+        verbose_name='Ингредиент',
     )
     amount = models.PositiveIntegerField(
         blank=False,
