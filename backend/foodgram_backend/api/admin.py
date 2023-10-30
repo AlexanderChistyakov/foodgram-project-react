@@ -1,11 +1,11 @@
 from django.contrib import admin
-from recipe.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from recipe.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag, RecipeIngredients
 from user.models import Follow, User
 
 admin.site.register(Follow)
 admin.site.register(Tag)
 admin.site.register(ShoppingCart)
-
+admin.site.register(RecipeIngredients)
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name')

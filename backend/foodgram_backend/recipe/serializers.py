@@ -14,7 +14,6 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
-        pagination_class = None
 
 
 class IngredientDetailSerializer(serializers.ModelSerializer):
@@ -23,53 +22,24 @@ class IngredientDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
-        pagination_class = None
 
 
 class IngredientAmountSerializer(serializers.ModelSerializer):
     """Сериализатор количества ингредиента."""
 
-    id = serializers.SerializerMethodField()
-    name = serializers.SerializerMethodField()
-    measurement_unit = serializers.SerializerMethodField()
-    amount = serializers.SerializerMethodField()
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    measurement_unit = serializers.CharField()
+    # amount = serializers.IntegerField()
 
     class Meta:
         model = RecipeIngredients
-        fields = ('id', 'name', 'measurement_unit', 'amount')
-        pagination_class = None
-
-    def get_ingredient(self, obj):
-        """Получение ингредиента по id для следующих методов."""
-
-        return Ingredient.objects.filter(name=obj).first()
-
-    def get_id(self, obj):
-        """Получение id ингредиента."""
-
-        ingredient = self.get_ingredient(obj)
-        return ingredient.id
-
-    def get_name(self, obj):
-        """Получение названия ингредиента."""
-
-        ingredient = self.get_ingredient(obj)
-        return ingredient.name
-
-    def get_measurement_unit(self, obj):
-        """Получение единицы измерения ингредиента."""
-
-        ingredient = self.get_ingredient(obj)
-        return ingredient.measurement_unit
-
-    def get_amount(self, obj):
-        """Получение количества ингредиента."""
-
-        ingredient = self.get_ingredient(obj)
-        recipe_ingredient = RecipeIngredients.objects.filter(
-            ingredient_id=ingredient.id
-        ).first()
-        return recipe_ingredient.amount
+        fields = (
+            'id',
+            'name',
+            'measurement_unit',
+            'amount'
+        )
 
 
 class IngredientAmountSerializerForNewRecipe(serializers.ModelSerializer):
@@ -81,7 +51,6 @@ class IngredientAmountSerializerForNewRecipe(serializers.ModelSerializer):
     class Meta:
         model = RecipeIngredients
         fields = ('id', 'amount')
-        pagination_class = None
 
     def get_ingredient(self, obj):
         """Получение ингредиента по id для следующих методов."""
@@ -131,7 +100,6 @@ class RecipeListSerializer(serializers.ModelSerializer):
             'id', 'tags', 'author', 'ingredients', 'is_favorited',
             'is_in_shopping_cart', 'name', 'image', 'text', 'cooking_time'
         )
-        pagination_class = None
 
     def get_is_favorited(self, obj):
         """Проверка наличия рецепта в избранном."""
