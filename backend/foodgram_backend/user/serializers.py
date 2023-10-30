@@ -5,6 +5,7 @@ from user.models import Follow, User
 
 class CustomUserCreateSerializer(UserCreateSerializer):
     """Сериализатор создания пользователя."""
+
     class Meta:
         model = User
         fields = ('id', 'first_name', 'last_name',
@@ -20,6 +21,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 class CustomUserSerializer(UserSerializer):
     """Сериализатор пользователя."""
+
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
@@ -32,6 +34,7 @@ class CustomUserSerializer(UserSerializer):
 
     def get_is_subscribed(self, obj):
         """Проверка наличия подписки."""
+
         request = self.context.get('request')
         if request.user.is_anonymous:
             return False

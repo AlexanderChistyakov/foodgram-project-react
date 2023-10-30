@@ -15,6 +15,7 @@ from rest_framework.response import Response
 
 class TagViewset(viewsets.ReadOnlyModelViewSet):
     """Представление тегов."""
+
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
@@ -26,6 +27,7 @@ class TagViewset(viewsets.ReadOnlyModelViewSet):
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """Представление ингредиентов."""
+
     queryset = Ingredient.objects.all()
     serializer_class = IngredientDetailSerializer
     permission_classes = (
@@ -36,6 +38,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, _):
         """Получение ингредиентов в виде списка."""
+
         serializer = self.serializer_class(self.queryset, many=True)
         data = serializer.data[:]
         return Response(data)
@@ -43,6 +46,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """Представление рецептов."""
+
     queryset = Recipe.objects.all()
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
@@ -50,6 +54,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         """Выбор сериализатора рецептов."""
+
         if self.action in ('list', 'retrive'):
             return RecipeListSerializer
         if self.action in ('create', 'update', 'partial_update'):
@@ -58,6 +63,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Получение кверисета."""
+
         queryset = super().get_queryset()
         limit = self.request.query_params.get('limit')
         if limit:
@@ -91,6 +97,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def favorite(self, request, pk):
         """Добавление рецепта в избранное, удаление из избранного."""
+
         user = request.user
         recipe = get_object_or_404(Recipe, id=pk)
         if request.method == 'POST':
@@ -130,6 +137,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk):
         """Добавление рецепта в список покупок, удаление из списка покупок."""
+
         user = request.user
         recipe = get_object_or_404(Recipe, id=pk)
         if request.method == 'POST':
@@ -169,6 +177,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         """Скачивание txt-файла со списком покупок."""
+
         shopping_cart = ShoppingCart.objects.filter(
             user=request.user
         ).values_list('recipe_id', flat=True)

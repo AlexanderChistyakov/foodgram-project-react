@@ -1,23 +1,29 @@
 from django.conf import settings
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
+from utils.constants import (
+    TAG_COLOR_MAX_LENGTH, TAG_NAME_MAX_LENGTH,
+    MODELS_FIELDS_MAX_LENGTH, RECIPE_COOKING_TIME_MIN_VALUE
+)
 
 
 class Tag(models.Model):
     """Модель тега."""
+
     name = models.CharField(
-        max_length=50,
+        max_length=TAG_NAME_MAX_LENGTH,
         unique=True,
-        blank=False,
         verbose_name='Название тега'
     )
     color = models.CharField(
-        max_length=7,
+        max_length=TAG_COLOR_MAX_LENGTH,
+        unique=True,
         blank=False,
         verbose_name='Цвет тега',
         validators=[
             RegexValidator(
-                regex=r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
+                regex=r'^#([A-F0-9]{6}|[A-F0-9]{3})$',
+                message='Только верхний регистр!',
             )
         ]
     )
@@ -38,14 +44,15 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     """Модель ингредиента."""
+
     name = models.CharField(
-        max_length=150,
+        max_length=MODELS_FIELDS_MAX_LENGTH,
         unique=True,
         blank=False,
         verbose_name='Название ингредиента',
     )
     measurement_unit = models.CharField(
-        max_length=200,
+        max_length=MODELS_FIELDS_MAX_LENGTH,
         blank=False,
         verbose_name='Название меры',
     )
@@ -67,8 +74,9 @@ class Ingredient(models.Model):
 
 class Recipe(models.Model):
     """Модель рецепта."""
+
     name = models.CharField(
-        max_length=150,
+        max_length=MODELS_FIELDS_MAX_LENGTH,
         unique=True,
         blank=False,
         verbose_name='Название рецепта',
@@ -87,7 +95,6 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient,
         related_name='recipes',
-        blank=True,
         verbose_name='Ингредиенты',
     )
     image = models.ImageField(
@@ -97,13 +104,13 @@ class Recipe(models.Model):
         help_text='Загрузка картинки к рецепту',
     )
     text = models.TextField(
-        blank=True,
         verbose_name='Описание рецепта',
     )
     cooking_time = models.PositiveIntegerField(
-        blank=True,
+        default=RECIPE_COOKING_TIME_MIN_VALUE,
         null=True,
         verbose_name='Время приготовления в минутах',
+        validators=[MinValueValidator(1, 'Не меньше 1 минуты.')]
     )
     pub_date = models.DateTimeField(
         'Дата публикации рецепта',
@@ -121,6 +128,7 @@ class Recipe(models.Model):
 
 class RecipeIngredients(models.Model):
     """Модель связи рецепта и ингредиента."""
+
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
@@ -146,6 +154,7 @@ class RecipeIngredients(models.Model):
 
 class Favorite(models.Model):
     """Модель избранных рецептов."""
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -160,6 +169,7 @@ class Favorite(models.Model):
 
 class ShoppingCart(models.Model):
     """Модель корзины."""
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

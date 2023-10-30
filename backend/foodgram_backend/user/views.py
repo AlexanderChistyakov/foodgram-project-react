@@ -11,7 +11,7 @@ from user.serializers import CustomUserSerializer
 
 class UserListViewSet(views.UserViewSet):
     """Представление пользователей."""
-    # serializer_class = CustomUserSerializer
+
     queryset = User.objects.all()
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
     filter_backends = (DjangoFilterBackend,)
@@ -32,6 +32,7 @@ class UserListViewSet(views.UserViewSet):
     )
     def subscriptions(self, request):
         """Получение подписок и сериализация."""
+
         authors = User.objects.filter(following__user=request.user)
         serializer = SubscriptionListSerializer(
             authors, many=True, context={'request': request}
@@ -46,6 +47,7 @@ class UserListViewSet(views.UserViewSet):
     )
     def subscribe(self, request, id):
         """Подписка на автора, отписка."""
+
         user = request.user
         author = get_object_or_404(User, id=id)
         if request.method == 'POST':
@@ -86,6 +88,7 @@ class UserListViewSet(views.UserViewSet):
     )
     def me(self, request):
         """Представление авторизованного пользователя."""
+
         if request.user.is_anonymous:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         if request.method == 'GET':
