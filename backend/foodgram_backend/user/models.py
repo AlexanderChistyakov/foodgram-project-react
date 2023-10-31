@@ -17,7 +17,6 @@ class User(AbstractUser):
         unique=True,
         verbose_name='Юзернейм',
         null=False,
-        blank=False,
         validators=[
             RegexValidator(regex=r'^[\w.@+-]+\Z', )
         ]
@@ -26,13 +25,11 @@ class User(AbstractUser):
         max_length=MODELS_FIELDS_MAX_LENGTH,
         verbose_name='Имя',
         null=False,
-        blank=False
     )
     last_name = models.CharField(
         max_length=MODELS_FIELDS_MAX_LENGTH,
         verbose_name='Фамилия',
         null=False,
-        blank=False
     )
 
 

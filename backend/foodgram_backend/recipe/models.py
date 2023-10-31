@@ -18,7 +18,6 @@ class Tag(models.Model):
     color = models.CharField(
         max_length=TAG_COLOR_MAX_LENGTH,
         unique=True,
-        blank=False,
         verbose_name='Цвет тега',
         validators=[
             RegexValidator(
@@ -29,7 +28,6 @@ class Tag(models.Model):
     )
     slug = models.SlugField(
         unique=True,
-        blank=False,
         verbose_name='Слаг тега',
     )
 
@@ -48,12 +46,10 @@ class Ingredient(models.Model):
     name = models.CharField(
         max_length=MODELS_FIELDS_MAX_LENGTH,
         unique=True,
-        blank=False,
         verbose_name='Название ингредиента',
     )
     measurement_unit = models.CharField(
         max_length=MODELS_FIELDS_MAX_LENGTH,
-        blank=False,
         verbose_name='Название меры',
     )
 

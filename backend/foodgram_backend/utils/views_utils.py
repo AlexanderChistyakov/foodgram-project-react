@@ -23,8 +23,8 @@ def favorite(_, request, pk, ModelToAdd, ModelToSerialize, SerializerForModel):
             recipe=recipe
         ).exists():
             ModelToAdd.objects.create(user=request.user, recipe=recipe)
-            recipes = ModelToSerialize.objects.filter(id=pk).first()
-            serializer = SerializerForModel(recipes)
+            queryset = ModelToSerialize.objects.filter(id=pk).first()
+            serializer = SerializerForModel(queryset)
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED
