@@ -64,7 +64,7 @@ class UserListViewSet(views.UserViewSet):
                 )
             else:
                 return Response(
-                    {"errors": "Ошибка подписки."},
+                    {'errors': 'Ошибка подписки.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
         if request.method == 'DELETE':
@@ -75,7 +75,7 @@ class UserListViewSet(views.UserViewSet):
                 Follow.objects.filter(user=user, author=author).delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(
-                {"errors": "Ошибка. Нет записи в БД для удаления."},
+                {'errors': 'Ошибка. Нет записи в БД для удаления.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         return Response(status=status.HTTP_400_BAD_REQUEST)

@@ -1,8 +1,9 @@
 import base64
 
 from django.core.files.base import ContentFile
-from recipe.models import (Favorite, Ingredient, Recipe, RecipeIngredients,
-                           ShoppingCart, Tag)
+from recipe.models import (
+    Favorite, Ingredient, Recipe, RecipeIngredients, ShoppingCart, Tag
+)
 from rest_framework import serializers
 from user.models import Follow, User
 from user.serializers import CustomUserSerializer
@@ -94,7 +95,9 @@ class Base64ImageField(serializers.ImageField):
         if isinstance(data, str) and data.startswith('data:image'):
             format, imgstr = data.split(';base64,')
             ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+            data = ContentFile(
+                base64.b64decode(imgstr), name='temp.' + ext
+            )
         return super().to_internal_value(data)
 
 
@@ -207,6 +210,17 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         recipe.tags.set(tags_list)
         recipe.ingredients.set(ingredient_list)
         return recipe
+
+    def update(self, instance, validated_data):
+        """Обновление рецепта."""
+
+        instance.name = validated_data.get('name', instance.name)
+        instance.text = validated_data.get('text', instance.text)
+        instance.cooking_time = validated_data.get(
+            'cooking_time', instance.cooking_time
+        )
+        instance.save()
+        return instance
 
     def to_representation(self, instance):
         request = self.context.get('request')

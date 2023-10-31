@@ -4,13 +4,14 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from recipe.models import (Favorite, Ingredient, Recipe, RecipeIngredients,
                            ShoppingCart, Tag)
-from recipe.serializers import (IngredientDetailSerializer,
-                                RecipeCreateSerializer, RecipeListSerializer,
-                                RecipeSerializer, RecipeSerializerShort,
-                                TagSerializer)
+from recipe.serializers import (
+    IngredientDetailSerializer, RecipeCreateSerializer, RecipeSerializer,
+    RecipeSerializerShort, TagSerializer
+)
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from utils import views_utils
 
 
 class TagViewset(viewsets.ReadOnlyModelViewSet):
@@ -19,10 +20,11 @@ class TagViewset(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
-    def list(self, request):
-        serializer = self.serializer_class(self.queryset, many=True)
-        data = serializer.data[:]
-        return Response(data)
+    def list(self, _):
+        """Получение тегов в виде списка словарей (значение 'result').
+        Функция изменяет вывод тегов, т.к. из-за настроек проекта без данного
+        метода получаем  результат с пагинацией."""
+        return views_utils.list(self, _)
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -34,11 +36,11 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ('name',)
 
     def list(self, _):
-        """Получение ингредиентов в виде списка."""
+        """Получение ингредиентов в виде списка словарей (значение 'result').
+        Функция изменяет вывод тегов, т.к. из-за настроек проекта без данного
+        метода получаем  результат с пагинацией."""
 
-        serializer = self.serializer_class(self.queryset, many=True)
-        data = serializer.data[:]
-        return Response(data)
+        return views_utils.list(self, _)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -52,8 +54,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         """Выбор сериализатора рецептов."""
 
-        if self.action in ('list', 'retrive'):
-            return RecipeListSerializer
         if self.action in ('create', 'update', 'partial_update'):
             return RecipeCreateSerializer
         return RecipeSerializer
@@ -95,37 +95,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def favorite(self, request, pk):
         """Добавление рецепта в избранное, удаление из избранного."""
 
-        user = request.user
-        recipe = get_object_or_404(Recipe, id=pk)
-        if request.method == 'POST':
-            if not Favorite.objects.filter(
-                user=user,
-                recipe=recipe
-            ).exists():
-                Favorite.objects.create(user=request.user, recipe=recipe)
-                recipes = Recipe.objects.filter(id=pk).first()
-                serializer = RecipeSerializerShort(recipes)
-                return Response(
-                    serializer.data,
-                    status=status.HTTP_201_CREATED
-                )
-            else:
-                return Response(
-                    {"errors": "Ошибка добавления в избранное."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-        if request.method == 'DELETE':
-            if Favorite.objects.filter(
-                user=user,
-                recipe=recipe
-            ).exists():
-                Favorite.objects.filter(user=user, recipe=recipe).delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(
-                {"errors": "Ошибка. Нет записи в БД для удаления."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return views_utils.favorite(
+            self, request, pk, Favorite, Recipe, RecipeSerializerShort
+        )
 
     @action(
         detail=True,
@@ -135,37 +107,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk):
         """Добавление рецепта в список покупок, удаление из списка покупок."""
 
-        user = request.user
-        recipe = get_object_or_404(Recipe, id=pk)
-        if request.method == 'POST':
-            if not ShoppingCart.objects.filter(
-                user=user,
-                recipe=recipe
-            ).exists():
-                ShoppingCart.objects.create(user=request.user, recipe=recipe)
-                recipes = Recipe.objects.filter(id=pk).first()
-                serializer = RecipeSerializerShort(recipes)
-                return Response(
-                    serializer.data,
-                    status=status.HTTP_201_CREATED
-                )
-            else:
-                return Response(
-                    {"errors": "Ошибка добавления в список покупок."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-        if request.method == 'DELETE':
-            if ShoppingCart.objects.filter(
-                user=user,
-                recipe=recipe
-            ).exists():
-                ShoppingCart.objects.filter(user=user, recipe=recipe).delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(
-                {"errors": "Ошибка. Нет записи в БД для удаления."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return views_utils.favorite(
+            self, request, pk, ShoppingCart, Recipe, RecipeSerializerShort
+        )
 
     @action(
         detail=False,
