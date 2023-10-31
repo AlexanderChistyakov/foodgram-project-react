@@ -92,7 +92,7 @@ class UserListViewSet(views.UserViewSet):
             )
             return Response(serializer.data, status=status.HTTP_200_OK)
         serializer = self.get_serializer(
-            request.user,data=request.data, partial=True
+            request.user, data=request.data, partial=True
         )
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
