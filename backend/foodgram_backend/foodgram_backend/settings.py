@@ -3,6 +3,10 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from dotenv import find_dotenv, load_dotenv
+
+dotenv_path = find_dotenv()
+load_dotenv(dotenv_path)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -11,6 +15,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='key')
 
 
 DEBUG = os.getenv('DEBUG', default=False) == 'True'
+
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(', ')
 
@@ -53,7 +58,7 @@ ROOT_URLCONF = 'foodgram_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
