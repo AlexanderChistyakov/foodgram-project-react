@@ -1,3 +1,4 @@
+from api.pagination import LimitedPagination
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (CustomUserSerializer, IngredientDetailSerializer,
                              RecipeCreateSerializer, RecipeSerializer,
@@ -8,9 +9,10 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser import views
+from recipe.filters import IngredientFilter, RecipeFilter
 from recipe.models import (Favorite, Ingredient, Recipe, RecipeIngredients,
                            ShoppingCart, Tag)
-from rest_framework import filters, permissions, status, viewsets
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from user.models import Follow, User
@@ -124,8 +126,9 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Ingredient.objects.all()
     serializer_class = IngredientDetailSerializer
-    filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientFilter
 
     def list(self, _):
         """Получение ингредиентов в виде списка словарей (значение 'result').
@@ -142,6 +145,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
     )
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = RecipeFilter
+    pagination_class = LimitedPagination
 
     def get_serializer_class(self):
         """Выбор сериализатора рецептов."""
@@ -149,35 +155,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.action in ('create', 'update', 'partial_update'):
             return RecipeCreateSerializer
         return RecipeSerializer
-
-    def get_queryset(self):
-        """Получение кверисета."""
-
-        queryset = super().get_queryset()
-        limit = self.request.query_params.get('limit')
-        if limit:
-            queryset = queryset[:int(limit)]
-        if self.request.query_params.get('author'):
-            queryset = queryset.filter(
-                author=self.request.query_params.get('author')
-            )
-        if self.request.query_params.get('is_in_shopping_cart') == '1':
-            queryset = queryset.filter(
-                shopping_cart__user=self.request.user
-            )
-        if self.request.query_params.get('is_in_shopping_cart') == '0':
-            queryset = queryset.filter(shopping_cart__isnull=True)
-        if self.request.query_params.get('tags'):
-            queryset = queryset.filter(
-                tags__slug=self.request.query_params.get('tags')
-            )
-        if self.request.query_params.get('is_favorited') == '1':
-            queryset = queryset.filter(
-                favorites__user=self.request.user
-            )
-        if self.request.query_params.get('is_favorited') == '0':
-            queryset = queryset.filter(favorites__isnull=True)
-        return queryset
 
     @action(
         detail=True,
