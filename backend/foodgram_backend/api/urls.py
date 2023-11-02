@@ -16,5 +16,4 @@ router.register('users', UserListViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-
 ]
