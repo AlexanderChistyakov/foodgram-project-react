@@ -1,9 +1,9 @@
 from api.pagination import LimitedPagination
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (CustomUserSerializer, IngredientDetailSerializer,
-                             RecipeCreateSerializer, RecipeSerializer,
-                             RecipeSerializerShort, SubscriptionListSerializer,
-                             TagSerializer)
+                             RecipeCreateSerializer, RecipeListSerializer,
+                             RecipeSerializer, RecipeSerializerShort,
+                             SubscriptionListSerializer, TagSerializer)
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -151,7 +151,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         """Выбор сериализатора рецептов."""
-
+        if self.action in ('list', 'retrive'):
+            return RecipeListSerializer
         if self.action in ('create', 'update', 'partial_update'):
             return RecipeCreateSerializer
         return RecipeSerializer
