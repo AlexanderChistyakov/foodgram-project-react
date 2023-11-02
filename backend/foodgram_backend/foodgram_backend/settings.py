@@ -178,9 +178,9 @@ DJOSER = {
     'USERNAME_FIELD': 'email',
     'SEND_ACTIVATION_EMAIL': False,
     'SERIALIZERS': {
-        'current_user': 'user.serializers.CustomUserSerializer',
-        'user': 'user.serializers.CustomUserSerializer',
-        'user_create': 'user.serializers.CustomUserCreateSerializer',
+        'current_user': 'api.serializers.CustomUserSerializer',
+        'user': 'api.serializers.CustomUserSerializer',
+        'user_create': 'api.serializers.CustomUserCreateSerializer',
     },
     'HIDE_USERS': False,
     'PASSWORD_CHANGED_EMAIL_CONFIRMATION': False,

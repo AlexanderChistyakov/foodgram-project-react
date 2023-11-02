@@ -1,18 +1,11 @@
 from django.contrib import admin
-from recipe.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag, RecipeIngredients
-from user.models import Follow, User
+from recipe.models import (
+    Ingredient, Recipe, ShoppingCart, Tag, RecipeIngredients, Favorite
+)
 
-admin.site.register(Follow)
 admin.site.register(Tag)
 admin.site.register(ShoppingCart)
 admin.site.register(RecipeIngredients)
-
-class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'first_name', 'last_name')
-    list_filter = ('username', 'email')
-
-
-admin.site.register(User, UserAdmin)
 
 
 class FavoriteInstanceInline(admin.TabularInline):
@@ -22,9 +15,11 @@ class FavoriteInstanceInline(admin.TabularInline):
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'author', 'display_tags', 'get_favorites_count',)
     list_filter = ('author', 'name', 'tags')
-    fields = ('name', 'author', 'tags',
-              'ingredients', 'image', 'text',
-              'cooking_time', )
+    fields = (
+        'name', 'author', 'tags',
+        'ingredients', 'image', 'text',
+        'cooking_time',
+    )
     inlines = (FavoriteInstanceInline,)
 
     def display_tags(self, obj):
