@@ -12,7 +12,7 @@ services:
     volumes:
       - pg_data_fg:/var/lib/postgresql/data
   backend:
-    build: ./backend/
+    build: ./foodgram_backend/backend/
     env_file: .env
     volumes:
       - static:/backend_static
