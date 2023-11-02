@@ -1,18 +1,15 @@
 from api.permissions import IsAuthorOrReadOnly
-from api.serializers import (
-    CustomUserSerializer, IngredientDetailSerializer,
-    RecipeCreateSerializer, RecipeSerializer,
-    RecipeSerializerShort, SubscriptionListSerializer,
-    TagSerializer
-)
+from api.serializers import (CustomUserSerializer, IngredientDetailSerializer,
+                             RecipeCreateSerializer, RecipeSerializer,
+                             RecipeSerializerShort, SubscriptionListSerializer,
+                             TagSerializer)
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser import views
-from recipe.models import (
-    Favorite, Ingredient, Recipe, RecipeIngredients, ShoppingCart, Tag
-)
+from recipe.models import (Favorite, Ingredient, Recipe, RecipeIngredients,
+                           ShoppingCart, Tag)
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
