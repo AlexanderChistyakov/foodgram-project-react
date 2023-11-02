@@ -46,4 +46,5 @@ class IngredientAdmin(admin.ModelAdmin):
     list_filter = ('name',)
     search_fields = ('name',)
 
+
 admin.site.register(Ingredient, IngredientAdmin)
