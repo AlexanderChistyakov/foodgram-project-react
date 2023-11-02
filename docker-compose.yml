@@ -1,7 +1,7 @@
 version: '3'
 
 volumes:
-  pg_data_kg:
+  pg_data_fg:
   static:
   media:
 
@@ -10,7 +10,7 @@ services:
     image: postgres:13
     env_file: .env
     volumes:
-      - pg_data_kg:/var/lib/postgresql/data
+      - pg_data_fg:/var/lib/postgresql/data
   backend:
     build: ./backend/
     env_file: .env
@@ -31,4 +31,4 @@ services:
       - static:/static
       - media:/media
     ports:
-      - 9000:80
+      - 8000:80
