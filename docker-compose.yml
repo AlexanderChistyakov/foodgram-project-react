@@ -11,6 +11,10 @@ services:
     env_file: .env
     volumes:
       - pg_data_fg:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready
+      interval: 5s
+      reties: 10
   backend:
     build: ./backend/foodgram_backend/
     env_file: .env
