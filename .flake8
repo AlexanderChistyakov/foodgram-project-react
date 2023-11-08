@@ -4,6 +4,9 @@ ignore =
     F811,
     H301,
     H306,
+    I005,
+    I004,
+    I001
 exclude = 
     tests/,
     */migrations/,
