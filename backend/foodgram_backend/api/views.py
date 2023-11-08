@@ -125,8 +125,10 @@ class TagViewset(viewsets.ReadOnlyModelViewSet):
 
     def list(self, _):
         """Получение тегов в виде списка словарей (значение 'result').
+
         Функция изменяет вывод тегов, т.к. из-за настроек проекта без данного
-        метода получаем  результат с пагинацией."""
+        метода получаем  результат с пагинацией.
+        """
         return views_utils.list(self, _)
 
 
@@ -141,8 +143,10 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, _):
         """Получение ингредиентов в виде списка словарей (значение 'result').
+
         Функция изменяет вывод тегов, т.к. из-за настроек проекта без данного
-        метода получаем  результат с пагинацией."""
+        метода получаем  результат с пагинацией.
+        """
 
         return views_utils.list(self, _)
 
@@ -161,6 +165,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         """Выбор сериализатора рецептов."""
+
         if self.action in ('list', 'retrive'):
             return RecipeListSerializer
         if self.action in ('create', 'update', 'partial_update'):
@@ -207,7 +212,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(permissions.IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
-        """Скачивание txt-файла со списком покупок."""
+        """Скачивание txt-файла списка покупок."""
 
         shopping_cart = ShoppingCart.objects.filter(
             user=request.user

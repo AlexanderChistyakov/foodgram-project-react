@@ -6,8 +6,10 @@ from utils import text_constants
 
 
 def list(self, _):
-    """Получение элементов кверисета в виде списка словарей
-    (значение 'result')."""
+    """Получение элементов кверисета в виде списка словарей.
+
+    Преобразует ответ API в значение 'result'.
+    """
 
     serializer = self.serializer_class(self.queryset, many=True)
     data = serializer.data[:]
@@ -21,26 +23,27 @@ def favorite(_, request, pk, ModelToAdd, ModelToSerialize, SerializerForModel):
     recipe = get_object_or_404(ModelToSerialize, id=pk)
     if request.method == 'POST':
         if not ModelToAdd.objects.filter(
-            user=user, recipe=recipe
+            user=user,
+            recipe=recipe
         ).exists():
             ModelToAdd.objects.create(user=request.user, recipe=recipe)
             queryset = ModelToSerialize.objects.filter(id=pk).first()
             serializer = SerializerForModel(queryset)
             return Response(
-                serializer.data, status=status.HTTP_201_CREATED
+                serializer.data,
+                status=status.HTTP_201_CREATED
             )
         return Response(
-            {
-                'errors': text_constants.ADD_ENTRY_ERROR
-            }, status=status.HTTP_400_BAD_REQUEST
+            {'errors': text_constants.ADD_ENTRY_ERROR},
+            status=status.HTTP_400_BAD_REQUEST
         )
     if ModelToAdd.objects.filter(
-        user=user, recipe=recipe
+        user=user,
+        recipe=recipe
     ).exists():
         ModelToAdd.objects.filter(user=user, recipe=recipe).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     return Response(
-        {
-            'errors': text_constants.NO_ENTRY
-        }, status=status.HTTP_400_BAD_REQUEST
+        {'errors': text_constants.NO_ENTRY},
+        status=status.HTTP_400_BAD_REQUEST
     )

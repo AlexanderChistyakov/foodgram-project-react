@@ -26,8 +26,7 @@ class RecipeFilter(FilterSet):
         fields = ('author', 'tags', 'is_favorited', 'is_in_shopping_cart')
 
     def filter_is_favorited(self, queryset, _, value):
-        """Проверка наличия рецепта в избранном пользователя,
-        создавшего запрос.."""
+        """Проверка наличия рецепта в избранном пользователя."""
 
         if value and self.request.user.is_authenticated:
             return queryset.filter(
@@ -36,8 +35,7 @@ class RecipeFilter(FilterSet):
         return queryset
 
     def filter_is_in_shopping_cart(self, queryset, _, value):
-        """Проверка наличия рецепта в списке покупок пользователя,
-        создавшего запрос."""
+        """Проверка наличия рецепта в списке покупок пользователя."""
 
         if value and self.request.user.is_authenticated:
             return queryset.filter(shopping_cart__user=self.request.user)

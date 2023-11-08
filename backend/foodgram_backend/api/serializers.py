@@ -67,8 +67,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientIDAmountSerializer(serializers.ModelSerializer):
-    """Сериализатор количества ингредиента с двумя полями -
-    id и amount."""
+    """Сериализатор количества ингредиента с двумя полями - id и amount."""
 
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all(),
@@ -324,8 +323,10 @@ class SubscriptionListSerializer(serializers.ModelSerializer):
         )
 
     def to_representation(self, instance):
-        """Переопределение метода to_representation для возвращения полей
-        по первичному ключу."""
+        """Переопределение метода to_representation.
+
+        Это сделано для возвращения полей по первичному ключу.
+        """
 
         return {
             'email': instance.email,
