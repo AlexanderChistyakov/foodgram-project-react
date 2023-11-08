@@ -168,3 +168,31 @@ git push
 > Далее каждый деплой изменений в проекте происходит по инструкции docker-compose.production.yml.
 > Оба файла копируются на сервер автоматически после срабатывания скрипта из main.yml. 
 > Файл .env с переменными окружения формируется по инструкции из main.yml, значения переменных берутся в Secrets.
+
+
+
+## API Endpoints
+Рецепты:
+- /api/recipes/ - Получение списка рецептов, создание рецепта
+- /api/recipes/<id>/ - Retrieve, update, и delete рецепта
+- /api/recipes/{id}/favorite/ - добавление рецепта в избранное, удаление 
+- /api/recipes/{id}/shopping_cart/ - добавление рецепта в корзину, удаление 
+- /api/recipes/download_shopping_cart/ - скачать txt-файл со списком покупок
+
+Пользователи:
+- /api/users/ - Получение списка пользователей, регистрация пользователя
+- /api/users/<id>/ - Retrieve, update, и delete профиля пользователя
+- /api/users/{id}/subscribe/ - Подписка на пользователя, отписка
+- /api/users/subscriptions/ - Список подписок
+- /api/users/me/ - Текущий пользователь
+- /api/users/set_password/ - Изменение пароля
+- /api/auth/token/login/ - Получение токена аутентификации
+- /api/auth/token/login/ - Удаление токена
+
+Ингредиенты:
+- /api/ingredients/ - Список ингредиентов
+- /api/ingredients/<id>/ - Получение ингредиента по id
+
+Теги:
+- /api/tags/ - Список тегов
+- /api/tags/<id>/ - Получение тега по id
