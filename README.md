@@ -174,14 +174,14 @@ git push
 ## API Endpoints
 Рецепты:
 - /api/recipes/ - Получение списка рецептов, создание рецепта
-- /api/recipes/<id>/ - Retrieve, update, и delete рецепта
+- /api/recipes/{id}/ - Retrieve, update, и delete рецепта
 - /api/recipes/{id}/favorite/ - добавление рецепта в избранное, удаление 
 - /api/recipes/{id}/shopping_cart/ - добавление рецепта в корзину, удаление 
 - /api/recipes/download_shopping_cart/ - скачать txt-файл со списком покупок
 
 Пользователи:
 - /api/users/ - Получение списка пользователей, регистрация пользователя
-- /api/users/<id>/ - Retrieve, update, и delete профиля пользователя
+- /api/users/{id}/ - Retrieve, update, и delete профиля пользователя
 - /api/users/{id}/subscribe/ - Подписка на пользователя, отписка
 - /api/users/subscriptions/ - Список подписок
 - /api/users/me/ - Текущий пользователь
@@ -191,8 +191,8 @@ git push
 
 Ингредиенты:
 - /api/ingredients/ - Список ингредиентов
-- /api/ingredients/<id>/ - Получение ингредиента по id
+- /api/ingredients/{id}/ - Получение ингредиента по id
 
 Теги:
 - /api/tags/ - Список тегов
-- /api/tags/<id>/ - Получение тега по id
+- /api/tags/{id}/ - Получение тега по id
