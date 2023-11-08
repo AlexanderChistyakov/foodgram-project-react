@@ -16,19 +16,25 @@ def list(self, _):
     return Response(data)
 
 
-def favorite(_, request, pk, ModelToAdd, ModelToSerialize, SerializerForModel):
+def favorite(
+        _,
+        request,
+        pk,
+        model_to_add,
+        model_to_serialize,
+        serializer_model
+):
     """Добавление записи в избранное, удаление из избранного."""
 
     user = request.user
-    recipe = get_object_or_404(ModelToSerialize, id=pk)
+    recipe = get_object_or_404(model_to_serialize, id=pk)
     if request.method == 'POST':
-        if not ModelToAdd.objects.filter(
+        if not model_to_add.objects.filter(
             user=user,
             recipe=recipe
         ).exists():
-            ModelToAdd.objects.create(user=request.user, recipe=recipe)
-            queryset = ModelToSerialize.objects.filter(id=pk).first()
-            serializer = SerializerForModel(queryset)
+            model_to_add.objects.create(user=request.user, recipe=recipe)
+            serializer = serializer_model(recipe)
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED
@@ -37,11 +43,11 @@ def favorite(_, request, pk, ModelToAdd, ModelToSerialize, SerializerForModel):
             {'errors': text_constants.ADD_ENTRY_ERROR},
             status=status.HTTP_400_BAD_REQUEST
         )
-    if ModelToAdd.objects.filter(
+    if model_to_add.objects.filter(
         user=user,
         recipe=recipe
     ).exists():
-        ModelToAdd.objects.filter(user=user, recipe=recipe).delete()
+        model_to_add.objects.filter(user=user, recipe=recipe).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     return Response(
         {'errors': text_constants.NO_ENTRY},
