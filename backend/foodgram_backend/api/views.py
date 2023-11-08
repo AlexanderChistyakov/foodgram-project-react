@@ -1,22 +1,26 @@
-from api.pagination import LimitedPagination
-from api.permissions import IsAuthorOrReadOnly
-from api.serializers import (CustomUserSerializer, IngredientDetailSerializer,
-                             RecipeCreateSerializer, RecipeListSerializer,
-                             RecipeSerializer, RecipeSerializerShort,
-                             SubscriptionListSerializer, TagSerializer)
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser import views
-from recipe.filters import IngredientFilter, RecipeFilter
-from recipe.models import (Favorite, Ingredient, Recipe, RecipeIngredients,
-                           ShoppingCart, Tag)
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
+from api.pagination import LimitedPagination
+from api.permissions import IsAuthorOrReadOnly
+from api.serializers import (
+    CustomUserSerializer, IngredientDetailSerializer, RecipeCreateSerializer,
+    RecipeListSerializer, RecipeSerializer, RecipeSerializerShort,
+    SubscriptionListSerializer, TagSerializer
+)
+from recipe.filters import IngredientFilter, RecipeFilter
+from recipe.models import (
+    Favorite, Ingredient, Recipe,
+    RecipeIngredients, ShoppingCart, Tag
+)
 from user.models import Follow, User
-from utils import views_utils
+from utils import views_utils, text_constants
 
 
 class UserListViewSet(views.UserViewSet):
@@ -45,7 +49,9 @@ class UserListViewSet(views.UserViewSet):
 
         authors = User.objects.filter(following__user=request.user)
         serializer = SubscriptionListSerializer(
-            authors, many=True, context={'request': request}
+            authors,
+            many=True,
+            context={'request': request}
         )
         return Response(serializer.data)
 
@@ -73,7 +79,7 @@ class UserListViewSet(views.UserViewSet):
                     status=status.HTTP_201_CREATED
                 )
             return Response(
-                {'errors': 'Ошибка подписки.'},
+                {'errors': text_constants.SUBSCRIPTION_ERROR},
                 status=status.HTTP_400_BAD_REQUEST
             )
         if user != author and Follow.objects.filter(
@@ -83,7 +89,7 @@ class UserListViewSet(views.UserViewSet):
             Follow.objects.filter(user=user, author=author).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(
-            {'errors': 'Ошибка. Нет записи в БД для удаления.'},
+            {'errors': text_constants.NO_ENTRY},
             status=status.HTTP_400_BAD_REQUEST
         )
 
@@ -98,11 +104,14 @@ class UserListViewSet(views.UserViewSet):
 
         if request.method == 'GET':
             serializer = CustomUserSerializer(
-                request.user, context={'request': request}
+                request.user,
+                context={'request': request}
             )
             return Response(serializer.data, status=status.HTTP_200_OK)
         serializer = self.get_serializer(
-            request.user, data=request.data, partial=True
+            request.user,
+            data=request.data,
+            partial=True
         )
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -143,7 +152,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
+        permissions.IsAuthenticatedOrReadOnly,
+        IsAuthorOrReadOnly
     )
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
@@ -166,7 +176,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """Добавление рецепта в избранное, удаление из избранного."""
 
         return views_utils.favorite(
-            self, request, pk, Favorite, Recipe, RecipeSerializerShort
+            self,
+            request,
+            pk,
+            Favorite,
+            Recipe,
+            RecipeSerializerShort
         )
 
     @action(
@@ -178,7 +193,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """Добавление рецепта в список покупок, удаление из списка покупок."""
 
         return views_utils.favorite(
-            self, request, pk, ShoppingCart, Recipe, RecipeSerializerShort
+            self,
+            request,
+            pk,
+            ShoppingCart,
+            Recipe,
+            RecipeSerializerShort
         )
 
     @action(
@@ -196,7 +216,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ingredients = RecipeIngredients.objects.filter(
             recipe_id__in=shopping_cart
         ).values(
-            'ingredient__name', 'ingredient__measurement_unit'
+            'ingredient__name',
+            'ingredient__measurement_unit'
         ).annotate(amount=Sum('amount')).order_by('ingredient__name')
 
         shopping_list_content = []

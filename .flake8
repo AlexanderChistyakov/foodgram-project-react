@@ -2,6 +2,8 @@
 ignore = 
     W503,
     F811,
+    H301,
+    H306,
 exclude = 
     tests/,
     */migrations/,

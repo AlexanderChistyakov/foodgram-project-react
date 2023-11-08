@@ -1,6 +1,9 @@
 from django.contrib import admin
-from recipe.models import (Favorite, Ingredient, Recipe, RecipeIngredients,
-                           ShoppingCart, Tag)
+
+from recipe.models import (
+    Favorite, Ingredient, Recipe,
+    RecipeIngredients, ShoppingCart, Tag
+)
 
 admin.site.register(Tag)
 admin.site.register(ShoppingCart)
@@ -21,8 +24,12 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'author', 'display_tags', 'get_favorites_count',)
     list_filter = ('author', 'name', 'tags')
     fields = (
-        'name', 'author', 'tags',
-        'ingredients', 'image', 'text',
+        'name',
+        'author',
+        'tags',
+        'ingredients',
+        'image',
+        'text',
         'cooking_time',
     )
     search_fields = ('name', 'tags__name', 'author__username')
