@@ -318,9 +318,17 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return instance
 
     def to_representation(self, instance):
+        """Переопределение метода to_representation."""
+
         request = self.context.get('request')
         context = {'request': request}
-        return RecipeDetailSerializer(instance, context=context).data
+        serializer = RecipeListSerializer(instance, context=context)
+        data = serializer.data
+        data['is_favorite'] = serializer.get_is_favorited(instance)
+        data['is_in_shopping_cart'] = serializer.get_is_in_shopping_cart(
+            instance
+        )
+        return data
 
 
 class RecipeSerializerShort(serializers.ModelSerializer):
