@@ -223,9 +223,7 @@ class RecipeDetailSerializer(serializers.ModelSerializer):
 class RecipeCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания рецепта."""
 
-    tags = serializers.ListField(
-        child=serializers.IntegerField(min_value=0)
-    )
+    tags = serializers.ListField()
     ingredients = serializers.ListField()
     image = Base64ImageField(required=False, allow_null=True)
 

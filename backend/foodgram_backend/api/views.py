@@ -122,14 +122,7 @@ class TagViewset(viewsets.ReadOnlyModelViewSet):
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-
-    def list(self, _):
-        """Получение тегов в виде списка словарей (значение 'result').
-
-        Функция изменяет вывод тегов, т.к. из-за настроек проекта без данного
-        метода получаем  результат с пагинацией.
-        """
-        return views_utils.list(self, _)
+    pagination_class = None
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -140,15 +133,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ('name',)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
-
-    def list(self, _):
-        """Получение ингредиентов в виде списка словарей (значение 'result').
-
-        Функция изменяет вывод тегов, т.к. из-за настроек проекта без данного
-        метода получаем  результат с пагинацией.
-        """
-
-        return views_utils.list(self, _)
+    pagination_class = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet):

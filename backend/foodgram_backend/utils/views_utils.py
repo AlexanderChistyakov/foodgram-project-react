@@ -5,17 +5,6 @@ from rest_framework.response import Response
 from utils import text_constants
 
 
-def list(self, _):
-    """Получение элементов кверисета в виде списка словарей.
-
-    Преобразует ответ API в значение 'result'.
-    """
-
-    serializer = self.serializer_class(self.queryset, many=True)
-    data = serializer.data[:]
-    return Response(data)
-
-
 def favorite(
         _,
         request,
