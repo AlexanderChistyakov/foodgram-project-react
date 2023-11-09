@@ -49,7 +49,8 @@ class CustomUserSerializer(UserSerializer):
         if request.user.is_anonymous:
             return False
         return Follow.objects.filter(
-            user=request.user, author=obj
+            user=request.user,
+            author=obj
         ).exists()
 
 
@@ -202,7 +203,8 @@ class RecipeDetailSerializer(serializers.ModelSerializer):
     """Сериализатор для одного рецепта после создания."""
 
     ingredients = IngredientIDAmountSerializer(
-        many=True, source='recipe_ingredients'
+        many=True,
+        source='recipe_ingredients'
     )
     image = Base64ImageField(required=False, allow_null=True)
 
@@ -346,53 +348,17 @@ class RecipeSerializerShort(serializers.ModelSerializer):
         )
 
 
-class SubscriptionListSerializer(serializers.ModelSerializer):
+class SubscriptionListSerializer(CustomUserSerializer):
     """Сериализатор для подписок."""
 
-    email = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), source='user'
-    )
-    is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
     class Meta:
-        model = Follow
-        fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed',
-            'recipes',
-            'recipes_count'
+        model = User
+        fields = CustomUserSerializer.Meta.fields + (
+            'recipes', 'recipes_count'
         )
-
-    def to_representation(self, instance):
-        """Переопределение метода to_representation.
-
-        Это сделано для возвращения полей по первичному ключу.
-        """
-
-        return {
-            'email': instance.email,
-            'id': instance.id,
-            'username': instance.username,
-            'first_name': instance.first_name,
-            'last_name': instance.last_name,
-        }
-
-    def get_is_subscribed(self, obj):
-        """Проверка наличия подписки."""
-
-        request = self.context.get('request')
-        if request and not request.user.is_anonymous:
-            return Follow.objects.filter(
-                user=request.user,
-                author=obj
-            ).exists()
-        return False
 
     def get_recipes(self, obj):
         """Получение рецептов."""
