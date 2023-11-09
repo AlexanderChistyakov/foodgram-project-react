@@ -145,8 +145,8 @@ class RecipeIngredients(models.Model):
         verbose_name = 'Мера(таблица m2m рецепт-ингредиент)'
         verbose_name_plural = 'Мера(таблица m2m рецепт-ингредиент)'
 
-    def __str__(self):
-        return self.recipe
+    # def __str__(self):
+    #     return self.recipe
 
 
 class Favorite(models.Model):

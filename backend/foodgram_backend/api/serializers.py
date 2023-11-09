@@ -241,6 +241,17 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('author',)
 
+    def create_ingredients(self, ingredient_data, recipe):
+        """Получение ингредиента, создание связи, возврат ингредиента."""
+
+        ingredient = Ingredient.objects.get(pk=ingredient_data['id'])
+        RecipeIngredients.objects.create(
+            recipe=recipe,
+            ingredient=ingredient,
+            amount=ingredient_data['amount']
+        )
+        return ingredient
+
     def create(self, validated_data):
         """Создание рецепта."""
 
@@ -255,11 +266,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 tag = Tag.objects.get(id=id)
                 tags_list.append(tag)
         for ingredient_data in ingredients:
-            ingredient = Ingredient.objects.get(pk=ingredient_data['id'])
-            RecipeIngredients.objects.create(
-                recipe=recipe,
-                ingredient=ingredient,
-                amount=ingredient_data['amount']
+            ingredient = self.create_ingredients(
+                ingredient_data,
+                recipe
             )
             ingredient_list.append(ingredient)
         recipe.tags.set(tags_list)
@@ -269,12 +278,42 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """Обновление рецепта."""
 
+        fields = [
+            'tags',
+            'ingredients',
+            'name',
+            'image',
+            'text',
+            'cooking_time',
+        ]
+        check_fileds = []
+        ingredient_list = []
+        ingredients = validated_data.get('ingredients')
+
+        for key in validated_data.keys():
+            check_fileds.append(key)
+        if check_fileds != fields:
+            raise serializers.ValidationError(
+                'Все поля должны быть заполнены.'
+            )
+
         instance.name = validated_data.get('name', instance.name)
         instance.text = validated_data.get('text', instance.text)
         instance.cooking_time = validated_data.get(
             'cooking_time',
             instance.cooking_time
         )
+        instance.image = validated_data.get('image', instance.image)
+        instance.tags.set(validated_data.get('tags', instance.tags))
+        for ingredient_data in ingredients:
+            ingredient = self.create_ingredients(
+                ingredient_data,
+                instance
+            )
+            ingredient_list.append(ingredient)
+
+        ingredient_list.append(ingredient)
+        instance.ingredients.set(ingredient_list)
         instance.save()
         return instance
 
