@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 
 from recipe.models import (
@@ -55,3 +56,16 @@ class IngredientAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Ingredient, IngredientAdmin)
+
+
+class TagForm(forms.ModelForm):
+    class Meta:
+        model = Tag
+        fields = '__all__'
+
+    def clean(self):
+        if Tag.objects.filter(
+            color=self.cleaned_data['color'].upper()
+        ).exists():
+            raise forms.ValidationError('Такой цвет уже существует')
+        return self.cleaned_data
