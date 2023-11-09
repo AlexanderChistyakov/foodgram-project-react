@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
+
 from utils.constants import (
     MODELS_FIELDS_MAX_LENGTH, RECIPE_COOKING_TIME_MIN_VALUE,
     TAG_COLOR_MAX_LENGTH, TAG_NAME_MAX_LENGTH
