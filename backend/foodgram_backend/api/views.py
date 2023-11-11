@@ -8,13 +8,13 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.pagination import LimitedPagination
-from api.permissions import IsAuthorOrReadOnly
+from api.permissions import IsAuthorOrReadOnly, ThisUserOrAdmin
 from api.serializers import (
     CustomUserSerializer, IngredientDetailSerializer, RecipeCreateSerializer,
     RecipeListSerializer, RecipeSerializer, RecipeSerializerShort,
     SubscriptionListSerializer, TagSerializer
 )
-from recipe.filters import IngredientFilter, RecipeFilter
+from recipe.filters import IngredientFilter, RecipeFilter, TagFilter
 from recipe.models import (
     Favorite, Ingredient, Recipe,
     RecipeIngredients, ShoppingCart, Tag
@@ -27,7 +27,10 @@ class UserListViewSet(views.UserViewSet):
     """Представление пользователей."""
 
     queryset = User.objects.all()
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+        ThisUserOrAdmin
+    )
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('username', 'email')
 
@@ -123,6 +126,7 @@ class TagViewset(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     pagination_class = None
+    filterset_class = TagFilter
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):

@@ -252,9 +252,29 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         )
         return ingredient
 
+    def check_fields(self, validated_data):
+        """Проверка полей."""
+
+        fields = [
+            'tags',
+            'ingredients',
+            'name',
+            'image',
+            'text',
+            'cooking_time',
+        ]
+        check_fileds = []
+        for key in validated_data.keys():
+            check_fileds.append(key)
+        if check_fileds != fields:
+            raise serializers.ValidationError(
+                'Все поля должны быть заполнены.'
+            )
+
     def create(self, validated_data):
         """Создание рецепта."""
 
+        self.check_fields(validated_data)
         tags_list = []
         ingredient_list = []
         author = self.context.get('request').user
@@ -278,25 +298,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """Обновление рецепта."""
 
-        fields = [
-            'tags',
-            'ingredients',
-            'name',
-            'image',
-            'text',
-            'cooking_time',
-        ]
-        check_fileds = []
+        self.check_fields(validated_data)
         ingredient_list = []
         ingredients = validated_data.get('ingredients')
-
-        for key in validated_data.keys():
-            check_fileds.append(key)
-        if check_fileds != fields:
-            raise serializers.ValidationError(
-                'Все поля должны быть заполнены.'
-            )
-
         instance.name = validated_data.get('name', instance.name)
         instance.text = validated_data.get('text', instance.text)
         instance.cooking_time = validated_data.get(
