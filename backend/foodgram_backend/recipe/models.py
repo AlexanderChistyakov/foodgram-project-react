@@ -22,8 +22,8 @@ class Tag(models.Model):
         verbose_name='Цвет тега',
         validators=[
             RegexValidator(
-                regex=r'^#([A-F0-9]{6}|[A-F0-9]{3})$',
-                message='Только верхний регистр!',
+                regex=r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
+                message='Нарушен формат ввода цвета. #RGB или #RRGGBB.',
             )
         ]
     )
@@ -145,8 +145,8 @@ class RecipeIngredients(models.Model):
         verbose_name = 'Мера(таблица m2m рецепт-ингредиент)'
         verbose_name_plural = 'Мера(таблица m2m рецепт-ингредиент)'
 
-    # def __str__(self):
-    #     return self.recipe
+    def __str__(self):
+        return self.recipe.name
 
 
 class Favorite(models.Model):
