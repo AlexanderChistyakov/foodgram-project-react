@@ -20,7 +20,7 @@ services:
     env_file: .env
     volumes:
       - static:/backend_static
-      - media:/media/
+      - media:/app/media
     depends_on:
       - db    
   frontend:
@@ -34,7 +34,7 @@ services:
     env_file: .env
     volumes:
       - static:/static
-      - media:/media
+      - media:/etc/nginx/html/media/
       - /backend/foodgram_backend/docs/:/usr/share/nginx/html/api/docs/
     depends_on:
       - db
