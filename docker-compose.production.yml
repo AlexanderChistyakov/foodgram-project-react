@@ -33,5 +33,5 @@ services:
       - 8000:80
     volumes:
       - static:/static
-      - media:/etc/nginx/html/media/
+      - media:/media
       - docs:/usr/share/nginx/html/api/docs/
