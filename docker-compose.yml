@@ -4,7 +4,6 @@ volumes:
   pg_data_fg:
   static:
   media:
-  docs:
 
 services:
   db:
@@ -22,7 +21,6 @@ services:
     volumes:
       - static:/backend_static
       - media:/media/
-      - docs:/app/docs/
     depends_on:
       - db    
   frontend:
@@ -37,7 +35,7 @@ services:
     volumes:
       - static:/static
       - media:/media
-      - docs:/usr/share/nginx/html/api/docs/
+      - /backend/foodgram_backend/docs/:/usr/share/nginx/html/api/docs/
     depends_on:
       - db
       - backend
