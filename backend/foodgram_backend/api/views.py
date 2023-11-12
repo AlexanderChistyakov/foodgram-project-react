@@ -6,6 +6,7 @@ from djoser import views
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 
 from api.pagination import LimitedPagination
 from api.permissions import IsAuthorOrReadOnly, ThisUserOrAdmin
@@ -45,18 +46,21 @@ class UserListViewSet(views.UserViewSet):
         detail=False,
         url_path='subscriptions',
         methods=('get',),
-        permission_classes=(permissions.IsAuthenticated,)
+        permission_classes=(permissions.IsAuthenticated,),
     )
     def subscriptions(self, request):
         """Получение подписок и сериализация."""
 
         authors = User.objects.filter(following__user=request.user)
+        paginator = PageNumberPagination()
+        paginator.page_size = 6
+        result_page = paginator.paginate_queryset(authors, request)
         serializer = SubscriptionListSerializer(
-            authors,
+            result_page,
             many=True,
             context={'request': request}
         )
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
 
     @action(
         detail=True,
