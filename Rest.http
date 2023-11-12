@@ -1,13 +1,13 @@
 # Регистрация пользователя 
-GET  http://127.0.0.1:8000/api/users/me/
+PATCH  http://127.0.0.1:8000/api/users/5/
 Content-type: application/json
-Authorization: Token 8884e3c9caf1d1b73945d26f58e5243f710dacdd
+Authorization: Token 59d26c097f8e1797363310b0981bce4f6e8f4872
  
 { 
-    "username": "newguy4", 
+    "username": "newguy5768", 
     "first_name": "new", 
     "last_name": "guy", 
-    "email": "test4@tes.ru", 
+    "email": "test987@tes.ru", 
     "password": "dddddddd8"  
 } 
  
@@ -42,14 +42,14 @@ Authorization: Token 59d26c097f8e1797363310b0981bce4f6e8f4872
  
 ### 
 # Создать рецепт 
-PATCH http://127.0.0.1:8000/api/recipes/4/
+POST http://127.0.0.1:8000/api/recipes/
 Content-type: application/json 
 Authorization: Token 59d26c097f8e1797363310b0981bce4f6e8f4872 
  
 { 
     "ingredients": [ 
         { 
-            "id": 1, 
+            "id": 5, 
             "amount": 10 
         } 
     ], 
@@ -66,9 +66,9 @@ Authorization: Token 59d26c097f8e1797363310b0981bce4f6e8f4872
  
 ### 
 # Список рецептов 
-POST http://127.0.0.1:8000/api/recipes/4/shopping_cart/
+GET http://127.0.0.1:8000/api/recipes/download_shopping_cart/
 Content-type: application/json 
-Authorization: Token 59d26c097f8e1797363310b0981bce4f6e8f4872 
+# Authorization: Token 59d26c097f8e1797363310b0981bce4f6e8f4872 
  
  
 ### 

@@ -150,6 +150,7 @@ jobs:
           sudo docker compose -f docker-compose.production.yml exec backend python manage.py makemigrations
           sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
           sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
+          docker compose -f docker-compose.local.yml exec backend python manage.py load_csv --path=data/ingredients.csv --model_name=Ingredient --app_name=recipe
           sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /backend_static/static/
 
   send_message:
