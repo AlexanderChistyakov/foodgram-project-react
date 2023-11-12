@@ -183,4 +183,4 @@ class ShoppingCart(models.Model):
         verbose_name_plural = 'Пользовательские корзины'
 
     def __str__(self):
-        return self.user
+        return self.user.username
