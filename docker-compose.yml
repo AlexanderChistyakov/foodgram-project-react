@@ -34,7 +34,7 @@ services:
     env_file: .env
     volumes:
       - static:/static
-      - media:/etc/nginx/html/media/media/
+      - media:/etc/nginx/html/media/
       - /backend/foodgram_backend/docs/:/usr/share/nginx/html/api/docs/
     depends_on:
       - db

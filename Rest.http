@@ -1,13 +1,13 @@
 # Регистрация пользователя 
-PATCH  http://127.0.0.1:8000/api/users/5/
+GET http://127.0.0.1:8000/api/users/subscriptions/
 Content-type: application/json
-Authorization: Token 59d26c097f8e1797363310b0981bce4f6e8f4872
+Authorization: Token 51f4791b525d1f4d0e5fd69b978bbf1c3fbea49e
  
 { 
-    "username": "newguy5768", 
+    "username": "newguy23", 
     "first_name": "new", 
     "last_name": "guy", 
-    "email": "test987@tes.ru", 
+    "email": "test23@test.ru", 
     "password": "dddddddd8"  
 } 
  
@@ -17,7 +17,7 @@ POST http://127.0.0.1:8000/api/auth/token/login/
 Content-type: application/json 
  
 { 
-    "email": "test3@tes.ru", 
+    "email": "test23@test.ru", 
     "password": "dddddddd8"  
 } 
  
@@ -58,7 +58,7 @@ Authorization: Token 59d26c097f8e1797363310b0981bce4f6e8f4872
         5 
     ], 
     "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAgMAAABieywaAAAACVBMVEUAAAD///9fX1/S0ecCAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg==", 
-    "name": "пивасик", 
+    "name": "пивасик3", 
     "text": "string", 
     "cooking_time": 1 
 } 
@@ -66,9 +66,9 @@ Authorization: Token 59d26c097f8e1797363310b0981bce4f6e8f4872
  
 ### 
 # Список рецептов 
-GET http://127.0.0.1:8000/api/recipes/download_shopping_cart/
+GET http://127.0.0.1:8000/api/recipes/
 Content-type: application/json 
-# Authorization: Token 59d26c097f8e1797363310b0981bce4f6e8f4872 
+Authorization: Token 59d26c097f8e1797363310b0981bce4f6e8f4872 
  
  
 ### 
