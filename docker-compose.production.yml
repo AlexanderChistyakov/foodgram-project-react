@@ -32,4 +32,4 @@ services:
     volumes:
       - static:/static
       - media:/media
-      - ../backend/foodgram_backend/docs/:/usr/share/nginx/html/api/docs/
+      - ../foodgram_backend/docs/:/usr/share/nginx/html/api/docs/
