@@ -76,7 +76,10 @@ class UserListViewSet(views.UserViewSet):
             ).exists():
                 Follow.objects.create(user=request.user, author=author)
                 follows = User.objects.filter(id=id).first()
-                serializer = SubscriptionListSerializer(follows)
+                serializer = SubscriptionListSerializer(
+                    follows,
+                    context={'request': request}
+                )
                 return Response(
                     serializer.data,
                     status=status.HTTP_201_CREATED
