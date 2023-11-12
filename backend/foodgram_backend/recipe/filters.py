@@ -10,7 +10,6 @@ class RecipeFilter(FilterSet):
         field_name='author__id',
     )
     tags = filters.ModelMultipleChoiceFilter(
-        # method='filter_tags',
         field_name='tags__slug',
         to_field_name='slug',
         queryset=Tag.objects.all(),
@@ -44,15 +43,6 @@ class RecipeFilter(FilterSet):
             return queryset.none()
         if value and self.request.user.is_authenticated:
             return queryset.filter(shopping_cart__user=self.request.user)
-        return queryset
-
-    def filter_tags(self, queryset, _, value):
-        """Фильтр по тегам."""
-
-        if not value or (not queryset.filter(tags__in=value).exists()):
-            return queryset.none()
-        if value:
-            return queryset.filter(tags__in=value)
         return queryset
 
 
