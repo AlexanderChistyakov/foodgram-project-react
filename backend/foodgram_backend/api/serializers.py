@@ -240,7 +240,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             'cooking_time'
         )
         read_only_fields = ('author',)
-        # extra_kwargs = { 
+        # extra_kwargs = {
         #     'name': {'required': True},
         #     'text': {'required': True},
         #     'cooking_time': {'required': True},
