@@ -9,10 +9,11 @@ class RecipeFilter(FilterSet):
     author = filters.CharFilter(
         field_name='author__id',
     )
-    tags = filters.ModelMultipleChoiceFilter(
+    tags = filters.MultipleChoiceFilter(
         field_name='tags__slug',
-        to_field_name='slug',
-        queryset=Tag.objects.all(),
+        null_label='Без тега',
+        # to_field_name='slug',
+        # queryset=Tag.objects.all(),
     )
     is_favorited = filters.NumberFilter(
         method='filter_is_favorited',

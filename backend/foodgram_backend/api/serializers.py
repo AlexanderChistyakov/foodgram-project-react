@@ -240,6 +240,14 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             'cooking_time'
         )
         read_only_fields = ('author',)
+        # extra_kwargs = { 
+        #     'name': {'required': True},
+        #     'text': {'required': True},
+        #     'cooking_time': {'required': True},
+        #     'image': {'required': True},
+        #     'ingredients': {'required': True},
+        #     'tags': {'required': True},
+        # }
 
     def create_ingredients(self, ingredient_data, recipe):
         """Получение ингредиента, создание связи, возврат ингредиента."""
@@ -274,7 +282,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Создание рецепта."""
 
-        self.check_fields(validated_data)
+        # self.check_fields(validated_data)
         tags_list = []
         ingredient_list = []
         author = self.context.get('request').user
@@ -298,7 +306,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """Обновление рецепта."""
 
-        self.check_fields(validated_data)
+        # self.check_fields(validated_data)
         ingredient_list = []
         ingredients = validated_data.get('ingredients')
         instance.name = validated_data.get('name', instance.name)
