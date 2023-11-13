@@ -3,8 +3,8 @@ from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 
 from utils.constants import (
-    MODELS_FIELDS_MAX_LENGTH, RECIPE_COOKING_TIME_MIN_VALUE,
-    TAG_COLOR_MAX_LENGTH, TAG_NAME_MAX_LENGTH
+    MODELS_FIELDS_MAX_LENGTH, TAG_COLOR_MAX_LENGTH,
+    TAG_NAME_MAX_LENGTH
 )
 
 
@@ -75,7 +75,6 @@ class Recipe(models.Model):
     name = models.CharField(
         max_length=MODELS_FIELDS_MAX_LENGTH,
         unique=True,
-        blank=False,
         verbose_name='Название рецепта',
     )
     author = models.ForeignKey(
@@ -104,7 +103,6 @@ class Recipe(models.Model):
         verbose_name='Описание рецепта',
     )
     cooking_time = models.PositiveIntegerField(
-        default=RECIPE_COOKING_TIME_MIN_VALUE,
         verbose_name='Время приготовления в минутах',
         validators=[MinValueValidator(1, 'Не меньше 1 минуты.')]
     )

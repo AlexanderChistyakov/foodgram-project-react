@@ -223,9 +223,9 @@ class RecipeDetailSerializer(serializers.ModelSerializer):
 class RecipeCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания рецепта."""
 
-    tags = serializers.ListField()
-    ingredients = serializers.ListField()
-    image = Base64ImageField(required=False, allow_null=True)
+    tags = serializers.ListField(required=True)
+    ingredients = serializers.ListField(required=True)
+    image = Base64ImageField(required=True)
 
     class Meta:
         model = Recipe
@@ -240,14 +240,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             'cooking_time'
         )
         read_only_fields = ('author',)
-        # extra_kwargs = {
-        #     'name': {'required': True},
-        #     'text': {'required': True},
-        #     'cooking_time': {'required': True},
-        #     'image': {'required': True},
-        #     'ingredients': {'required': True},
-        #     'tags': {'required': True},
-        # }
 
     def create_ingredients(self, ingredient_data, recipe):
         """Получение ингредиента, создание связи, возврат ингредиента."""
@@ -260,29 +252,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         )
         return ingredient
 
-    def check_fields(self, validated_data):
-        """Проверка полей."""
-
-        fields = [
-            'tags',
-            'ingredients',
-            'name',
-            'image',
-            'text',
-            'cooking_time',
-        ]
-        check_fileds = []
-        for key in validated_data.keys():
-            check_fileds.append(key)
-        if check_fileds != fields:
-            raise serializers.ValidationError(
-                'Все поля должны быть заполнены.'
-            )
-
     def create(self, validated_data):
         """Создание рецепта."""
 
-        # self.check_fields(validated_data)
         tags_list = []
         ingredient_list = []
         author = self.context.get('request').user
@@ -306,7 +278,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """Обновление рецепта."""
 
-        # self.check_fields(validated_data)
         ingredient_list = []
         ingredients = validated_data.get('ingredients')
         instance.name = validated_data.get('name', instance.name)
