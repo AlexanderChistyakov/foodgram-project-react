@@ -6,7 +6,6 @@ from recipe.models import (
     RecipeIngredients, ShoppingCart, Tag
 )
 
-admin.site.register(Tag)
 admin.site.register(ShoppingCart)
 admin.site.register(RecipeIngredients)
 
@@ -28,7 +27,6 @@ class RecipeAdmin(admin.ModelAdmin):
         'name',
         'author',
         'tags',
-        'ingredients',
         'image',
         'text',
         'cooking_time',
@@ -63,9 +61,18 @@ class TagForm(forms.ModelForm):
         model = Tag
         fields = '__all__'
 
-    def clean(self):
+    def clean_color(self):
+        """Проверка на уникальность цвета."""
+        print(self.cleaned_data)
         if Tag.objects.filter(
             color=self.cleaned_data['color'].upper()
         ).exists():
             raise forms.ValidationError('Такой цвет уже существует')
-        return self.cleaned_data
+        return self.cleaned_data['color'].upper()
+
+
+class TagAdmin(admin.ModelAdmin):
+    form = TagForm
+
+
+admin.site.register(Tag, TagAdmin)
