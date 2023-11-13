@@ -63,7 +63,7 @@ class TagForm(forms.ModelForm):
 
     def clean_color(self):
         """Проверка на уникальность цвета."""
-        print(self.cleaned_data)
+
         if Tag.objects.filter(
             color=self.cleaned_data['color'].upper()
         ).exists():
