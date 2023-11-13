@@ -1,7 +1,8 @@
-Сайт: https://chstykv.webhop.me/
-Админка:
-username: foodgram_admin
-password: Prl2023!
+- Сайт: https://chstykv.webhop.me/.
+
+## Админка:
+- username: foodgram_admin
+- password: Prl2023!
 
 
 #  [Foodgram][site_result]
