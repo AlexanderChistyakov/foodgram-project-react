@@ -54,11 +54,11 @@ class IngredientResource(resources.ModelResource):
 
     class Meta:
         model = Ingredient
-        # fields = (
-        #     'name',
-        #     'measurement_unit',
-        # )
-        import_id_fields = ('name', 'measurement_unit')
+        fields = (
+            'name',
+            'measurement_unit',
+        )
+        import_id_fields = ('name', )
         delimiter = ','
         exclude = ('id',)
 
