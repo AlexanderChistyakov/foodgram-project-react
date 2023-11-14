@@ -1,6 +1,9 @@
 from django import forms
 from django.contrib import admin
 
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
+
 from recipe.models import (
     Favorite, Ingredient, Recipe,
     RecipeIngredients, ShoppingCart, Tag
@@ -47,10 +50,24 @@ class RecipeAdmin(admin.ModelAdmin):
 admin.site.register(Recipe, RecipeAdmin)
 
 
-class IngredientAdmin(admin.ModelAdmin):
+class IngredientResource(resources.ModelResource):
+
+    class Meta:
+        model = Ingredient
+        # fields = (
+        #     'name',
+        #     'measurement_unit',
+        # )
+        import_id_fields = ('name', 'measurement_unit')
+        delimiter = ','
+        exclude = ('id',)
+
+
+class IngredientAdmin(ImportExportModelAdmin):
     list_display = ('name', 'measurement_unit')
     list_filter = ('name',)
     search_fields = ('name',)
+    resource_classes = (IngredientResource,)
 
 
 admin.site.register(Ingredient, IngredientAdmin)
