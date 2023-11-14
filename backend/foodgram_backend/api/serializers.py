@@ -313,6 +313,30 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         )
         return data
 
+    def validate_tags(self, tags):
+        tags_len = len(tags)
+        if tags_len == 0:
+            raise serializers.ValidationError(
+                'Необходимо добавить хотя бы 1 тег.'
+            )
+        if tags_len != len(set(tags)):
+            raise serializers.ValidationError(
+                'Теги должны быть уникальными.'
+            )
+        return tags
+
+    def validate_ingredients(self, ingredients):
+        ingredints_len = len(ingredients)
+        if ingredints_len == 0:
+            raise serializers.ValidationError(
+                'Необходимо добавить хотя бы 1 ингредиент.'
+            )
+        if ingredints_len != len(set(ingredients)):
+            raise serializers.ValidationError(
+                'Ингредиенты должны быть уникальными.'
+            )
+        return ingredients
+
 
 class RecipeSerializerShort(serializers.ModelSerializer):
     """Короткий сериализатор рецепта."""
